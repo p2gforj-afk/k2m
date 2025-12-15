@@ -140,7 +140,7 @@ int max_ter(T_liste l,int aux){
 
 
 
-#ifdef poulet
+
 
 int main(void){
     int aa = 512;
@@ -158,7 +158,5 @@ int main(void){
     printf("%d\n", max_ter(F, F->elt));
 
     printf("\n");
-    return 1; 
-
+    return 1;
 }
-#endif

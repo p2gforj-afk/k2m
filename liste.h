@@ -7,9 +7,7 @@
 
 // définir le type T_liste (typedef ...)
 
-struct list{
-   int elt; 
-   struct list * svt;};
+struct list{int elt; struct list * svt;};
 typedef struct list * T_liste;
 
 // prototypes des méthodes
