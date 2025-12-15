@@ -80,40 +80,48 @@ int NY(int Xa, int Ya, int Xs, int Ys){
   return abs(Xs - Xa) + abs(Ys - Ya);
 }
 
-action gourmandise(char * * carte, int taillexcarte, int tailleycarte, snake_list s, action derniere_action){
-  action a = 0;
-  int y_apple = 1;
-  int x_apple = 1;
-  while(carte[y_apple][x_apple] != BONUS){
-    y_apple++;
-    if (y_apple == tailleycarte){
-      y_apple = 1;
-      x_apple++;
+action victoire_ou_defaite_si_la_map_ne_convient_pas(char * * map, int mapxsize, int mapysize, snake_list s, action last_action ){
+  if(mapxsize%2 == 0 && mapysize%2 == 0){
+    printf("fin des reves");
+    return 0;
+  }
+  int x_head = s->x;
+  int y_head = s->y;
+  if (mapxsize%2 == 1){
+    if(y_head == 1 && x_head > 1){ //en haut on va a gauche
+      return WEST;
     }
+    if(x_head ==  mapxsize-1 && y_head == 2){ //fin du serpentin on remonte vers le couloir du haut
+      return NORTH;
+    }
+    if(x_head%2 == 1 && y_head < mapysize-1){ //serpentin
+      return SOUTH;
+    }
+    if(x_head%2 == 0 && y_head >2){
+      return NORTH;
+    }
+    return EAST;
   }
-  int y_serpent = s->y;
-  int x_serpent = s->x;
-  if (y_serpent < y_apple && (carte[y_serpent+1][x_serpent]==PATH || carte[y_serpent+1][x_serpent]==BONUS)){
-
-
-    a = SOUTH;
-  } // on va en haut
-  else if (x_serpent < x_apple && (carte[y_serpent][x_serpent+1]==PATH || carte[y_serpent][x_serpent+1]==BONUS)){
-
-    a = EAST;
-  } // on va a droite
-  else if (y_serpent > y_apple && (carte[y_serpent-1][x_serpent]==PATH || carte[y_serpent-1][x_serpent]==BONUS)){
-     a = NORTH;
-  } // on va en bas
-  else if (x_serpent > x_apple && (carte[y_serpent][x_serpent-1]==PATH || carte[y_serpent][x_serpent-1]==BONUS)){
-    
-                              a = WEST; //on va a gacuhe
+  else{
+    if(x_head == 1 && y_head > 1){ //a gauche on va en haut
+      return NORTH;
+    }
+    if(y_head ==  mapysize-1 && x_head == 2){//fin du serpentin on va dans le couloir de gauche
+      return WEST;
+    }
+    if(y_head%2 == 1 && x_head < mapxsize-1){
+      return EAST;
+    }
+    if(y_head%2 == 0 && x_head >2){
+      return NORTH;
+    }
+    return SOUTH;
   }
-  else a = aleatoire(carte,taillexcarte,tailleycarte,s,derniere_action);
-  return a;
-
 }
-
+action victoire(char * * map, int mapxsize, int mapysize, snake_list s, action last_action ){
+  action a = 0;
+  return a;
+}
 
 action snake(
 	     char * * map, // array of chars modeling the game map
@@ -124,7 +132,8 @@ action snake(
 	     ) {
   action a; // action to choose and return
   
-  a = gourmandise(map,mapxsize,mapysize,s,last_action);
+  a = victoire_ou_defaite_si_la_map_ne_convient_pas(map,mapxsize,mapysize,s,last_action);
+  // a = victoire(map,mapxsize,mapysize,s,last_action);
   // a = aleatoire(map,mapxsize,mapysize,s,last_action);
   
   return a; // answer to the game engine
