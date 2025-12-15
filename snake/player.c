@@ -64,10 +64,7 @@ action aleatoire(char * * map, int mapxsize, int mapysize, snake_list s, action 
       printf("\n");
     }
   // while the selected action is not valid and there exists a valide move
-  } while(!ok && (map[s->y-1][s->x]==PATH || map[s->y-1][s->x]==BONUS  
-		  || map[s->y][s->x+1]==PATH || map[s->y][s->x+1]==BONUS
-		  || map[s->y+1][s->x]==PATH || map[s->y+1][s->x]==BONUS
-		  || map[s->y][s->x-1]==PATH || map[s->y][s->x-1]==BONUS));
+  } while(!ok);
     
   return a;
 }
