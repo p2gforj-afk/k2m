@@ -82,33 +82,25 @@ action victoire_ou_defaite_si_la_map_ne_convient_pas(char * * map, int mapxsize,
   int x_head = s->x;
   int y_head = s->y;
   if (mapxsize%2 == 0){
-    if(y_head == 1 && x_head > 1){ //en haut on va a gauche
+    if(y_head == 1 && x_head > 1) //en haut on va a gauche
       return WEST;
-    }
-    if(x_head ==  mapxsize-2 && y_head == 2){ //fin du serpentin on remonte vers le couloir du haut
+    if(x_head ==  mapxsize-2 && y_head == 2) //fin du serpentin on remonte vers le couloir du haut
       return NORTH;
-    }
-    if(x_head%2 == 1 && y_head < mapysize-2){ //serpentin
+    if(x_head%2 == 1 && y_head < mapysize-2) //serpentin
       return SOUTH;
-    }
-    if(x_head%2 == 0 && y_head >2){
+    if(x_head%2 == 0 && y_head >2)
       return NORTH;
-    }
     return EAST;
   }
   else{
-    if(x_head == 1 && y_head > 1){ //a gauche on va en haut
+    if(x_head == 1 && y_head > 1) //a gauche on va en haut
       return NORTH;
-    }
-    if(y_head ==  mapysize-2 && x_head == 2){//fin du serpentin on va dans le couloir de gauche
+    if(y_head ==  mapysize-2 && x_head == 2)//fin du serpentin on va dans le couloir de gauche
       return WEST;
-    }
-    if(y_head%2 == 1 && x_head < mapxsize-2){
+    if(y_head%2 == 1 && x_head < mapxsize-2)
       return EAST;
-    }
-    if(y_head%2 == 0 && x_head >2){
+    if(y_head%2 == 0 && x_head >2)
       return NORTH;
-    }
     return SOUTH;
   }
 }
@@ -119,126 +111,90 @@ struct liste_BFS {
     action first_move;
     struct liste_BFS *next;
 };
-
 typedef struct liste_BFS * bfs;
 
-
 action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,char GOAL) {
-    char ma_map[mapysize][mapxsize];
-
-    // Copie de la map
+  char ma_map[mapysize][mapxsize]; // Copie de la map
     for (int y = 0; y < mapysize; y++)
-        for (int x = 0; x < mapxsize; x++)
-            ma_map[y][x] = map[y][x];
-
-    bfs debut = malloc(sizeof(struct liste_BFS));
-    bfs fin = debut;
-
-    debut->x = x_debut;
-    debut->y = y_debut;
-    debut->first_move = -1;
-    debut->next = NULL;
-
-    // Marquer la tête comme visitée
-    ma_map[y_debut][x_debut] = WALL;
-
-    int dx[4] = { 0,  0,  1, -1};
-    int dy[4] = {-1,  1,  0,  0};
-    action dirs[4] = {NORTH, SOUTH, EAST, WEST};
-
-    bfs courant = debut;
-
-    while (courant != NULL) {
-
-        // GOAL atteint
-        if (map[courant->y][courant->x] == GOAL) {
-            action res = courant->first_move;
-
-            while (debut) {
-                bfs tmp = debut;
-                debut = debut->next;
-                free(tmp);
-            }
-            return res;
-        }
-        // cinema incoming soon
-        int rd[4] = {-1,-1,-1,-1};
-        for(int k = 0; k<4; k++){
-          int j = rand()%4;
-          while (rd[0] == j || rd[1] == j ||rd[2] == j || rd[3] == j){
-            j = rand()%4;
-          }
-          rd[k] = j;
-        }
-
-        for (int i = 0; i < 4; i++) {
-            int nx = courant->x + dx[rd[i]];
-            int ny = courant->y + dy[rd[i]];
-
-
-            if (ma_map[ny][nx] != WALL &&
-                ma_map[ny][nx] != SNAKE_BODY &&
-                ma_map[ny][nx] != SNAKE_HEAD) {
-
-                bfs new = malloc(sizeof(*new));
-                new->x = nx;
-                new->y = ny;
-
-                new->first_move = (courant->first_move == -1) ? dirs[rd[i]] : courant->first_move;
-
-                new->next = NULL;
-                fin->next = new;
-                fin = new;
-
-                ma_map[ny][nx] = WALL; // visité
-            }
-        }
-
-        courant = courant->next;
+      for (int x = 0; x < mapxsize; x++)
+        ma_map[y][x] = map[y][x];
+  bfs debut = malloc(sizeof(*debut));
+  bfs fin = debut;
+  debut->x = x_debut;
+  debut->y = y_debut;
+  debut->first_move = -1;
+  debut->next = NULL;
+  int dx[4] = { 0,  0,  1, -1};
+  int dy[4] = {-1,  1,  0,  0};
+  action dirs[4] = {NORTH, SOUTH, EAST, WEST};
+  bfs courant = debut;
+  while (courant != NULL) {
+    if (map[courant->y][courant->x] == GOAL){ //GOALLLLLLLLLLLLL
+      action res = courant->first_move;
+      while (debut != NULL) {
+      bfs tmp = debut;
+      debut = debut->next;
+      free(tmp);
+      }
+      return res;
     }
-
-    // aucun chemin
-    while (debut) {
-        bfs tmp = debut;
-        debut = debut->next;
-        free(tmp);
+    int rd[4] = {-1,-1,-1,-1};   // cinema incoming soon
+    for(int k = 0; k<4; k++){
+      int j = rand()%4;
+      while (rd[0] == j || rd[1] == j ||rd[2] == j || rd[3] == j)
+        j = rand()%4;
+      rd[k] = j;
     }
-
-    return -1;
+    for (int i = 0; i < 4; i++) {
+      int nx = courant->x + dx[rd[i]];
+      int ny = courant->y + dy[rd[i]];
+      if (ma_map[ny][nx] != WALL && ma_map[ny][nx] != SNAKE_BODY && ma_map[ny][nx] != SNAKE_HEAD) {
+        bfs new = malloc(sizeof(*new));
+        new->x = nx;
+        new->y = ny;
+        new->first_move = (courant->first_move == -1) ? dirs[rd[i]] : courant->first_move;
+        new->next = NULL;
+        fin->next = new;
+        fin = new;
+        ma_map[ny][nx] = WALL; // visité
+      }
+    }
+    courant = courant->next;
+  }
+  while (debut != NULL) { //goal non atteint
+    bfs tmp = debut;
+    debut = debut->next;
+    free(tmp);
+  }
+  return -1;
 }
 
-
-action victoire(char **map,int mapxsize,int mapysize,snake_list s,action last_action) {
-    int x = s->x;
-    int y = s->y;
-
-    // 1 Aller vers la pomme si possible
-    action a = parcours_largeur(map, mapxsize, mapysize,x, y, BONUS);
-
-    if (a != -1) {
-        switch (a)
-        {
-        case NORTH:
-          if((parcours_largeur(map, mapxsize, mapysize, x, y-1, SNAKE_TAIL) != -1) || s->next == NULL)
-            return NORTH;
-          break;
-        case SOUTH:
-          if((parcours_largeur(map, mapxsize, mapysize, x, y+1, SNAKE_TAIL) != -1 )|| s->next == NULL)
-            return SOUTH;
-          break;
-        case EAST:
-          if((parcours_largeur(map, mapxsize, mapysize, x+1, y, SNAKE_TAIL) != -1) || s->next == NULL)
-            return EAST;
-          break;
-        case WEST:
-          if((parcours_largeur(map, mapxsize, mapysize, x-1, y, SNAKE_TAIL) != -1) || s->next == NULL)
-            return WEST;
-          break;
+action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action last_action) {
+  int x = s->x;
+  int y = s->y;
+  action a = parcours_largeur(map, mapxsize, mapysize,x, y, BONUS); 
+  if (a != -1) { //ETAPE 1 : aller vers la pomme si possible
+    switch (a){
+    case NORTH:
+      if((parcours_largeur(map, mapxsize, mapysize, x, y-1, SNAKE_TAIL) != -1) || s->next == NULL)
+        return NORTH;
+      break;
+    case SOUTH:
+      if((parcours_largeur(map, mapxsize, mapysize, x, y+1, SNAKE_TAIL) != -1 )|| s->next == NULL)
+        return SOUTH;
+      break;
+    case EAST:
+      if((parcours_largeur(map, mapxsize, mapysize, x+1, y, SNAKE_TAIL) != -1) || s->next == NULL)
+        return EAST;
+      break;
+    case WEST:
+      if((parcours_largeur(map, mapxsize, mapysize, x-1, y, SNAKE_TAIL) != -1) || s->next == NULL)
+        return WEST;
+      break;
     }
   }
-    return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
+  return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL); //ETAPE 2 : suivre sa queue si pas de chemin vers la pomme licite
 }
-
 
 action snake(
 	     char * * map, // array of chars modeling the game map
@@ -247,12 +203,11 @@ action snake(
 	     snake_list s, // snake coded as a linked list
 	     action last_action // last action made, set to -1 in the beginning 
 	     ) {
-  if(last_action == - 1){
-  srand(time(NULL));
-  }
+  if(last_action == - 1)
+    srand(time(NULL)); //permet l'utilisation massive de rand
   action a; // action to choose and return
   // a = victoire_ou_defaite_si_la_map_ne_convient_pas(map,mapxsize,mapysize,s,last_action);
-  a = victoire(map,mapxsize,mapysize,s,last_action);
+  a = presque_victoire(map,mapxsize,mapysize,s,last_action);
   // a = aleatoire(map,mapxsize,mapysize,s,last_action);
   return a; // answer to the game engine
 }
