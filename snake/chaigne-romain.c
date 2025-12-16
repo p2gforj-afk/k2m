@@ -152,7 +152,9 @@ action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_d
         bfs new = malloc(sizeof(*new));
         new->x = nx;
         new->y = ny;
-        new->first_move = (courant->first_move == -1) ? dirs[rd[i]] : courant->first_move;
+        new->first_move = (courant->first_move == -1) 
+                        ? dirs[rd[i]] 
+                        : courant->first_move;
         new->next = NULL;
         fin->next = new;
         fin = new;
