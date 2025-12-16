@@ -113,129 +113,128 @@ action victoire_ou_defaite_si_la_map_ne_convient_pas(char * * map, int mapxsize,
 }
 
 struct liste_BFS {
-                int x; 
-                int y; 
-                struct liste_BFS * next;};
+    int x;
+    int y;
+    action first_move;
+    struct liste_BFS *next;
+};
+
 typedef struct liste_BFS * bfs;
 
-int parcours_largeur(char **map, int mapxsize, int mapysize,int x_debut, int y_debut,char GOAL, action premiere_action){
-  char ma_map[mapysize][mapxsize]; //copie local de la map
-  for (int i=0; i<mapysize; i++){
-    for (int j=0; j<mapxsize; j++){
-      ma_map[i][j] = map[i][j];
-    }
-  }
-  bfs debut = malloc(sizeof(struct liste_BFS));
-  bfs fin = debut;
-  //intialisation de debut
-  switch (premiere_action) {
-    case NORTH: 
-      debut->x = x_debut;     
-      debut->y = y_debut - 1; 
-      break;
-    case SOUTH: 
-      debut->x = x_debut;     
-      debut->y = y_debut + 1; break;
-    case EAST:  
-      debut->x = x_debut + 1; 
-      debut->y = y_debut;     
-      break;
-    case WEST:  
-      debut->x = x_debut - 1; 
-      debut->y = y_debut;     
-      break;
-    }
+
+action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,char GOAL) {
+    char ma_map[mapysize][mapxsize];
+
+    // Copie de la map
+    for (int y = 0; y < mapysize; y++)
+        for (int x = 0; x < mapxsize; x++)
+            ma_map[y][x] = map[y][x];
+
+    bfs debut = malloc(sizeof(struct liste_BFS));
+    bfs fin = debut;
+
+    debut->x = x_debut;
+    debut->y = y_debut;
+    debut->first_move = -1;
     debut->next = NULL;
 
-  //si on peut rien faire
-  if (ma_map[debut->y][debut->x] == WALL ||
-      ma_map[debut->y][debut->x] == SNAKE_BODY ||
-      ma_map[debut->y][debut->x] == SNAKE_HEAD) {
-    free(debut);
-    return -1;
-  }
+    // Marquer la tête comme visitée
+    ma_map[y_debut][x_debut] = WALL;
 
-  ma_map[debut->y][debut->x] = WALL; //vu
-  bfs courant = debut;
-  while (courant != NULL) {
-    if (ma_map[courant->y][courant->x] == GOAL) {
-      // free
-      while (debut != NULL) {
-      bfs tmp = debut;
-      debut = debut->next;
-      free(tmp);
-      }
-      return 0; //le chemin existe
-    }
-    int dx[4] = {-1, 0, 0, 1};
-    int dy[4] = {0, -1, 1, 0};
+    int dx[4] = { 0,  0,  1, -1};
+    int dy[4] = {-1,  1,  0,  0};
+    action dirs[4] = {NORTH, SOUTH, EAST, WEST};
 
-    for (int i = 0; i < 4; i++) {
-      int nx = courant->x + dx[i];
-      int ny = courant->y + dy[i];
-      if (ma_map[ny][nx] != WALL &&
-          ma_map[ny][nx] != SNAKE_BODY &&
-          ma_map[ny][nx] != SNAKE_HEAD){
-        bfs new = malloc(sizeof(struct liste_BFS));
-        new->x = nx;
-        new->y = ny;
-        new->next = NULL;
-        fin->next = new;
-        fin = new;
-        ma_map[ny][nx] = WALL; //vu
-      }
+    bfs courant = debut;
+
+    while (courant != NULL) {
+
+        // GOAL atteint
+        if (map[courant->y][courant->x] == GOAL) {
+            action res = courant->first_move;
+
+            while (debut) {
+                bfs tmp = debut;
+                debut = debut->next;
+                free(tmp);
+            }
+            return res;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            int nx = courant->x + dx[i];
+            int ny = courant->y + dy[i];
+
+
+            if (ma_map[ny][nx] != WALL &&
+                ma_map[ny][nx] != SNAKE_BODY &&
+                ma_map[ny][nx] != SNAKE_HEAD) {
+
+                bfs new = malloc(sizeof(*new));
+                new->x = nx;
+                new->y = ny;
+
+                new->first_move =
+                    (courant->first_move == -1)
+                    ? dirs[i]
+                    : courant->first_move;
+
+                new->next = NULL;
+                fin->next = new;
+                fin = new;
+
+                ma_map[ny][nx] = WALL; // visité
+            }
+        }
+
+        courant = courant->next;
     }
-    courant = courant->next;
-    }
-    //pas d'issue
-    while (debut != NULL) {
+
+    // aucun chemin
+    while (debut) {
         bfs tmp = debut;
         debut = debut->next;
         free(tmp);
     }
+
     return -1;
 }
 
-action victoire(char * * map, int mapxsize, int mapysize, snake_list s, action last_action){
-//BFS entre tete et pomme 
-//si un chemin existe
-  //regarde si prochaine position de la tete peut rejoindre la queue
-  //si oui, move valide on le fait
-//si pas de chemin ou prochaine postition non valide, on suit notre queue (avec BFS)
-// si ya pas aleatoire - normalement ya mais bon -
-  int y_serpent = s->y;
-  int x_serpent = s->x;
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
-  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, NORTH) != -1 || s->next == NULL)){
-        return NORTH;
-      }
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, SOUTH) != -1 
-  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, SOUTH) != -1 || s->next == NULL)){
-        return SOUTH;
-      }
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, EAST) != -1 
-  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, EAST) != -1 || s->next == NULL)){
-        return EAST;
-      }
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, WEST) != -1 
-  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, WEST) != -1 || s->next == NULL)){
-        return WEST;
-      }
-  printf("DEBUG 1 \n");
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, NORTH) != -1){
-        return NORTH;
-      }
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, SOUTH) != -1){
-        return SOUTH;
-      }
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, EAST) != -1){
-        return EAST;
-      }
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, WEST) != -1){
-        return WEST;
-      }
-  printf("DEBUG 2 \n");
-  return aleatoire(map,mapxsize,mapysize,s,last_action);
+
+action victoire(char **map,int mapxsize,int mapysize,snake_list s,action last_action) {
+    int x = s->x;
+    int y = s->y;
+
+    // 1 Aller vers la pomme si possible
+    action a = parcours_largeur(map, mapxsize, mapysize,x, y, BONUS);
+
+    if (a != -1) {
+        switch (a)
+        {
+        case NORTH:
+          if((parcours_largeur(map, mapxsize, mapysize, x, y-1, SNAKE_TAIL) != -1) || s->next == NULL)
+            return NORTH;
+          break;
+        case SOUTH:
+          if((parcours_largeur(map, mapxsize, mapysize, x, y+1, SNAKE_TAIL) != -1 )|| s->next == NULL)
+            return SOUTH;
+          break;
+        case EAST:
+          if((parcours_largeur(map, mapxsize, mapysize, x+1, y, SNAKE_TAIL) != -1) || s->next == NULL)
+            return EAST;
+          break;
+        case WEST:
+          if((parcours_largeur(map, mapxsize, mapysize, x-1, y, SNAKE_TAIL) != -1) || s->next == NULL)
+            return WEST;
+          break;
+    }
+  }
+    a = parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
+
+    if (a != -1)
+        return a;
+
+    return aleatoire(map, mapxsize, mapysize, s, last_action);
 }
 
 action snake(
@@ -287,4 +286,3 @@ static void printBoolean(bool b) {
     printf("false");
   }
 }
-
