@@ -115,11 +115,10 @@ action victoire_ou_defaite_si_la_map_ne_convient_pas(char * * map, int mapxsize,
 struct liste_BFS {
                 int x; 
                 int y; 
-                struct liste_BFS * next;
-                action premiere_action};
+                struct liste_BFS * next;};
 typedef struct liste_BFS * bfs;
 
-action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int y_debut, char GOAL, action premiere_action){
+int parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int y_debut, char GOAL, action premiere_action){
   char ma_map[mapysize][mapxsize]; //ptite copie local de la map pour mettre des murs un peu partout apres...
   for(int i=0; i<mapysize; i++){
     for(int j=0; j<mapxsize; j++){
@@ -146,7 +145,6 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
       chemin->y = y_debut;
     break;
   }
-  chemin->premiere_action = premiere_action;
   bfs fin = chemin;
   bfs temp1 = chemin;
   bool ok = false;
@@ -159,7 +157,6 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
       bfs new = malloc(sizeof(struct liste_BFS)); //on fait un nouveau maillon
       new->y = chemin->y-1;                       //on set les champs du maillon
       new->x = chemin->x;
-      new->premiere_action = chemin->premiere_action;
       new->next = NULL;           
       fin->next = new;
       fin = new;                                  //on met le maillon en fin de file
@@ -172,7 +169,6 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
       new->y = chemin->y;
       new->x = chemin->x+1;
       new->next = NULL;
-      new->premiere_action = chemin->premiere_action;
       fin->next = new;
       fin = new;
     }
@@ -183,7 +179,6 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
       bfs new = malloc(sizeof(struct liste_BFS));
       new->y = chemin->y+1;
       new->x = chemin->x;
-      new->premiere_action = chemin->premiere_action;
       new->next = NULL;
       fin->next = new;
       fin = new;
@@ -195,7 +190,6 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
       bfs new = malloc(sizeof(struct liste_BFS));
       new->y = chemin->y;
       new->x = chemin->x-1;
-      new->premiere_action = chemin->premiere_action;
       new->next = NULL;
       fin->next = new;
       fin = new;
@@ -207,7 +201,6 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
         bfs new = malloc(sizeof(struct liste_BFS));
         new->y = chemin->y-1;
         new->x = chemin->x;
-        new->premiere_action = chemin->premiere_action;
         fin->next = new;
         fin = new;
       }
@@ -216,7 +209,6 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
         bfs new = malloc(sizeof(struct liste_BFS));
         new->y = chemin->y;
         new->x = chemin->x+1;
-        new->premiere_action = chemin->premiere_action;
         fin->next = new;
         fin = new;
       }
@@ -225,7 +217,6 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
         bfs new = malloc(sizeof(struct liste_BFS));
         new->y = chemin->y+1;
         new->x = chemin->x;
-        new->premiere_action = chemin->premiere_action;
         fin->next = new;
         fin = new;
       }
@@ -234,16 +225,15 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
         ma_map[chemin->y][chemin->x-1] = WALL; 
         new->y = chemin->y;
         new->x = chemin->x-1;
-        new->premiere_action = chemin->premiere_action;
         fin->next = new;
         fin = new;
       }
     }
     chemin = chemin->next;
   }
-  action a = -1;
+  int a = -1;
   if(ok){
-    a = fin->premiere_action;
+    a = 0;
     }
 //free
   while(temp1!=NULL){
@@ -264,32 +254,35 @@ action victoire(char * * map, int mapxsize, int mapysize, snake_list s, action l
   int y_serpent = s->y;
   int x_serpent = s->x;
   if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
-  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL) != -1 || s->next == NULL)){
-        return NORTH;
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
-  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL) != -1 || s->next == NULL)){
+  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, NORTH) != -1 || s->next == NULL)){
         return NORTH;
       }
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
-  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL) != -1 || s->next == NULL)){
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, SOUTH) != -1 
+  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, SOUTH) != -1 || s->next == NULL)){
+        return SOUTH;
+      }
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, EAST) != -1 
+  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, EAST) != -1 || s->next == NULL)){
+        return EAST;
+      }
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, WEST) != -1 
+  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, WEST) != -1 || s->next == NULL)){
+        return WEST;
+      }
+  printf("DEBUG 1 \n");
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, NORTH) != -1){
         return NORTH;
       }
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
-  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL) != -1 || s->next == NULL)){
-        return NORTH;
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, SOUTH) != -1){
+        return SOUTH;
       }
-  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
-  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL) != -1 || s->next == NULL)){
-        return NORTH;
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, EAST) != -1){
+        return EAST;
       }
-    }
-  }
-  printf("DEBUG 1");
-  action BFS_tete_queue = parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL);
-  if(BFS_tete_queue != -1){
-    printf("DEBUG 2");
-    return BFS_tete_queue;
-  }
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL, WEST) != -1){
+        return WEST;
+      }
+  printf("DEBUG 2 \n");
   return aleatoire(map,mapxsize,mapysize,s,last_action);
 }
 
