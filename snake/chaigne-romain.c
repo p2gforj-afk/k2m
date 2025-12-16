@@ -118,130 +118,82 @@ struct liste_BFS {
                 struct liste_BFS * next;};
 typedef struct liste_BFS * bfs;
 
-int parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int y_debut, char GOAL, action premiere_action){
-  char ma_map[mapysize][mapxsize]; //ptite copie local de la map pour mettre des murs un peu partout apres...
-  for(int i=0; i<mapysize; i++){
-    for(int j=0; j<mapxsize; j++){
+int parcours_largeur(char **map, int mapxsize, int mapysize,int x_debut, int y_debut,char GOAL, action premiere_action){
+  char ma_map[mapysize][mapxsize]; //copie local de la map
+  for (int i=0; i<mapysize; i++){
+    for (int j=0; j<mapxsize; j++){
       ma_map[i][j] = map[i][j];
     }
   }
-  bfs chemin = malloc(sizeof(struct liste_BFS));
-  switch (premiere_action)
-  {
-  case NORTH:
-      chemin->x = x_debut;
-      chemin->y = y_debut-1;
-    break;
-  case SOUTH:
-      chemin->x = x_debut;
-      chemin->y = y_debut+1;
-    break;
-  case EAST:
-      chemin->x = x_debut+1;
-      chemin->y = y_debut;
-    break;
-  case WEST:
-      chemin->x = x_debut-1;
-      chemin->y = y_debut;
-    break;
-  }
-  bfs fin = chemin;
-  bfs temp1 = chemin;
-  bool ok = false;
-  while(!ok && chemin!=NULL){
-    chemin->next = NULL;
-// on cherche ce qu'on cherche
-    if (ma_map[chemin->y-1][chemin->x] == GOAL){
-      ok = true;                                  //on a trouver ouiiii        
-      ma_map[chemin->y-1][chemin->x] = WALL; //petit mur comme ca on y retourne pas
-      bfs new = malloc(sizeof(struct liste_BFS)); //on fait un nouveau maillon
-      new->y = chemin->y-1;                       //on set les champs du maillon
-      new->x = chemin->x;
-      new->next = NULL;           
-      fin->next = new;
-      fin = new;                                  //on met le maillon en fin de file
+  bfs debut = malloc(sizeof(struct liste_BFS));
+  bfs fin = debut;
+  //intialisation de debut
+  switch (premiere_action) {
+    case NORTH: 
+      debut->x = x_debut;     
+      debut->y = y_debut - 1; 
+      break;
+    case SOUTH: 
+      debut->x = x_debut;     
+      debut->y = y_debut + 1; break;
+    case EAST:  
+      debut->x = x_debut + 1; 
+      debut->y = y_debut;     
+      break;
+    case WEST:  
+      debut->x = x_debut - 1; 
+      debut->y = y_debut;     
+      break;
     }
+    debut->next = NULL;
 
-    if (ma_map[chemin->y][chemin->x+1] == GOAL){
-      ok = true;
-      ma_map[chemin->y][chemin->x+1] = WALL;
-      bfs new = malloc(sizeof(struct liste_BFS));
-      new->y = chemin->y;
-      new->x = chemin->x+1;
-      new->next = NULL;
-      fin->next = new;
-      fin = new;
-    }
-
-    if (ma_map[chemin->y+1][chemin->x] == GOAL){
-      ok = true;
-      ma_map[chemin->y+1][chemin->x] = WALL;
-      bfs new = malloc(sizeof(struct liste_BFS));
-      new->y = chemin->y+1;
-      new->x = chemin->x;
-      new->next = NULL;
-      fin->next = new;
-      fin = new;
-    }
-
-    if (ma_map[chemin->y][chemin->x-1] == GOAL){
-      ok = true;
-      ma_map[chemin->y][chemin->x-1] = WALL;
-      bfs new = malloc(sizeof(struct liste_BFS));
-      new->y = chemin->y;
-      new->x = chemin->x-1;
-      new->next = NULL;
-      fin->next = new;
-      fin = new;
-    }
-// on a pas trouver ce qu'on cherche, donc on creuse
-    if(!ok){
-      if (ma_map[chemin->y-1][chemin->x] != WALL && ma_map[chemin->y-1][chemin->x] != SNAKE_BODY && ma_map[chemin->y-1][chemin->x] != SNAKE_HEAD && ma_map[chemin->y-1][chemin->x] != SNAKE_TAIL){
-        ma_map[chemin->y-1][chemin->x] = WALL; 
-        bfs new = malloc(sizeof(struct liste_BFS));
-        new->y = chemin->y-1;
-        new->x = chemin->x;
-        fin->next = new;
-        fin = new;
-      }
-      if (ma_map[chemin->y][chemin->x+1] != WALL && ma_map[chemin->y][chemin->x+1] != SNAKE_BODY && ma_map[chemin->y][chemin->x+1] != SNAKE_HEAD && ma_map[chemin->y][chemin->x+1] != SNAKE_TAIL){
-        ma_map[chemin->y][chemin->x+1] = WALL;
-        bfs new = malloc(sizeof(struct liste_BFS));
-        new->y = chemin->y;
-        new->x = chemin->x+1;
-        fin->next = new;
-        fin = new;
-      }
-      if (ma_map[chemin->y+1][chemin->x] != WALL && ma_map[chemin->y+1][chemin->x] != SNAKE_BODY && ma_map[chemin->y+1][chemin->x] != SNAKE_HEAD && ma_map[chemin->y+1][chemin->x] != SNAKE_TAIL){
-        ma_map[chemin->y+1][chemin->x] = WALL;
-        bfs new = malloc(sizeof(struct liste_BFS));
-        new->y = chemin->y+1;
-        new->x = chemin->x;
-        fin->next = new;
-        fin = new;
-      }
-      if (ma_map[chemin->y][chemin->x-1] != WALL && ma_map[chemin->y][chemin->x-1] != SNAKE_BODY && ma_map[chemin->y][chemin->x-1] != SNAKE_HEAD && ma_map[chemin->y][chemin->x-1] != SNAKE_TAIL){
-        bfs new = malloc(sizeof(struct liste_BFS));
-        ma_map[chemin->y][chemin->x-1] = WALL; 
-        new->y = chemin->y;
-        new->x = chemin->x-1;
-        fin->next = new;
-        fin = new;
-      }
-    }
-    chemin = chemin->next;
+  //si on peut rien faire
+  if (ma_map[debut->y][debut->x] == WALL ||
+      ma_map[debut->y][debut->x] == SNAKE_BODY ||
+      ma_map[debut->y][debut->x] == SNAKE_HEAD) {
+    free(debut);
+    return -1;
   }
-  int a = -1;
-  if(ok){
-    a = 0;
+
+  ma_map[debut->y][debut->x] = WALL; //vu
+  bfs courant = debut;
+  while (courant != NULL) {
+    if (ma_map[courant->y][courant->x] == GOAL) {
+      // free
+      while (debut != NULL) {
+      bfs tmp = debut;
+      debut = debut->next;
+      free(tmp);
+      }
+      return 0; //le chemin existe
     }
-//free
-  while(temp1!=NULL){
-    bfs temp2 = temp1;
-    temp1 = temp1->next;
-    free(temp2);
-  }
-  return a;
+    int dx[4] = {-1, 0, 0, 1};
+    int dy[4] = {0, -1, 1, 0};
+
+    for (int i = 0; i < 4; i++) {
+      int nx = courant->x + dx[i];
+      int ny = courant->y + dy[i];
+      if (ma_map[ny][nx] != WALL &&
+          ma_map[ny][nx] != SNAKE_BODY &&
+          ma_map[ny][nx] != SNAKE_HEAD){
+        bfs new = malloc(sizeof(struct liste_BFS));
+        new->x = nx;
+        new->y = ny;
+        new->next = NULL;
+        fin->next = new;
+        fin = new;
+        ma_map[ny][nx] = WALL; //vu
+      }
+    }
+    courant = courant->next;
+    }
+    //pas d'issue
+    while (debut != NULL) {
+        bfs tmp = debut;
+        debut = debut->next;
+        free(tmp);
+    }
+    return -1;
 }
 
 action victoire(char * * map, int mapxsize, int mapysize, snake_list s, action last_action){
