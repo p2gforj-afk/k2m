@@ -2,6 +2,7 @@
 #include <stdbool.h> // bool, true, false
 #include <stdlib.h> // rand
 #include <stdio.h> // printf
+#include <time.h>
 
 // main program's header file
 #include "snake_def.h"
@@ -160,10 +161,19 @@ action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_d
             }
             return res;
         }
+        // cinema incoming soon
+        int rd[4] = {-1,-1,-1,-1};
+        for(int k = 0; k<4; k++){
+          int j = rand()%4;
+          while (rd[0] == j || rd[1] == j ||rd[2] == j || rd[3] == j){
+            j = rand()%4;
+          }
+          rd[k] = j;
+        }
 
         for (int i = 0; i < 4; i++) {
-            int nx = courant->x + dx[i];
-            int ny = courant->y + dy[i];
+            int nx = courant->x + dx[rd[i]];
+            int ny = courant->y + dy[rd[i]];
 
 
             if (ma_map[ny][nx] != WALL &&
@@ -174,10 +184,7 @@ action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_d
                 new->x = nx;
                 new->y = ny;
 
-                new->first_move =
-                    (courant->first_move == -1)
-                    ? dirs[i]
-                    : courant->first_move;
+                new->first_move = (courant->first_move == -1) ? dirs[rd[i]] : courant->first_move;
 
                 new->next = NULL;
                 fin->next = new;
@@ -229,13 +236,9 @@ action victoire(char **map,int mapxsize,int mapysize,snake_list s,action last_ac
           break;
     }
   }
-    a = parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
-
-    if (a != -1)
-        return a;
-
-    return aleatoire(map, mapxsize, mapysize, s, last_action);
+    return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
 }
+
 
 action snake(
 	     char * * map, // array of chars modeling the game map
@@ -244,15 +247,15 @@ action snake(
 	     snake_list s, // snake coded as a linked list
 	     action last_action // last action made, set to -1 in the beginning 
 	     ) {
+  if(last_action == - 1){
+  srand(time(NULL));
+  }
   action a; // action to choose and return
-  
   // a = victoire_ou_defaite_si_la_map_ne_convient_pas(map,mapxsize,mapysize,s,last_action);
   a = victoire(map,mapxsize,mapysize,s,last_action);
   // a = aleatoire(map,mapxsize,mapysize,s,last_action);
-  
   return a; // answer to the game engine
 }
-
 /*
   printAction function:
   This function prints the input action name on screen.
@@ -273,7 +276,6 @@ static void printAction(action a) {
     break;
   }
 }
-
 /*
   printBoolean funtion:
   This function prints the input boolan value on screen.
