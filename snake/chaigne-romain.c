@@ -116,10 +116,10 @@ struct liste_BFS {
                 int x; 
                 int y; 
                 struct liste_BFS * next;
-                struct liste_BFS * prec};
+                action premiere_action};
 typedef struct liste_BFS * bfs;
 
-action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int y_debut, char GOAL){
+action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int y_debut, char GOAL, action premiere_action){
   char ma_map[mapysize][mapxsize]; //ptite copie local de la map pour mettre des murs un peu partout apres...
   for(int i=0; i<mapysize; i++){
     for(int j=0; j<mapxsize; j++){
@@ -127,87 +127,114 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
     }
   }
   bfs chemin = malloc(sizeof(struct liste_BFS));
-  chemin->x = x_debut;
-  chemin->y = y_debut;
-  chemin->prec = NULL;
+  switch (premiere_action)
+  {
+  case NORTH:
+      chemin->x = x_debut;
+      chemin->y = y_debut-1;
+    break;
+  case SOUTH:
+      chemin->x = x_debut;
+      chemin->y = y_debut+1;
+    break;
+  case EAST:
+      chemin->x = x_debut+1;
+      chemin->y = y_debut;
+    break;
+  case WEST:
+      chemin->x = x_debut-1;
+      chemin->y = y_debut;
+    break;
+  }
+  chemin->premiere_action = premiere_action;
   bfs fin = chemin;
+  bfs temp1 = chemin;
   bool ok = false;
   while(!ok && chemin!=NULL){
+    chemin->next = NULL;
 // on cherche ce qu'on cherche
     if (ma_map[chemin->y-1][chemin->x] == GOAL){
-      ok = true;                                  //on a trouver ouiiii
+      ok = true;                                  //on a trouver ouiiii        
+      ma_map[chemin->y-1][chemin->x] = WALL; //petit mur comme ca on y retourne pas
       bfs new = malloc(sizeof(struct liste_BFS)); //on fait un nouveau maillon
       new->y = chemin->y-1;                       //on set les champs du maillon
-      new->x = chemin->x; 
-      new->prec = chemin;           
+      new->x = chemin->x;
+      new->premiere_action = chemin->premiere_action;
+      new->next = NULL;           
       fin->next = new;
       fin = new;                                  //on met le maillon en fin de file
     }
 
     if (ma_map[chemin->y][chemin->x+1] == GOAL){
       ok = true;
+      ma_map[chemin->y][chemin->x+1] = WALL;
       bfs new = malloc(sizeof(struct liste_BFS));
       new->y = chemin->y;
       new->x = chemin->x+1;
-      new->prec = chemin;
+      new->next = NULL;
+      new->premiere_action = chemin->premiere_action;
       fin->next = new;
       fin = new;
     }
 
     if (ma_map[chemin->y+1][chemin->x] == GOAL){
       ok = true;
+      ma_map[chemin->y+1][chemin->x] = WALL;
       bfs new = malloc(sizeof(struct liste_BFS));
       new->y = chemin->y+1;
       new->x = chemin->x;
-      new->prec = chemin;
+      new->premiere_action = chemin->premiere_action;
+      new->next = NULL;
       fin->next = new;
       fin = new;
     }
 
     if (ma_map[chemin->y][chemin->x-1] == GOAL){
       ok = true;
+      ma_map[chemin->y][chemin->x-1] = WALL;
       bfs new = malloc(sizeof(struct liste_BFS));
       new->y = chemin->y;
       new->x = chemin->x-1;
-      new->prec = chemin;
+      new->premiere_action = chemin->premiere_action;
+      new->next = NULL;
       fin->next = new;
       fin = new;
     }
 // on a pas trouver ce qu'on cherche, donc on creuse
     if(!ok){
-      if (ma_map[chemin->y-1][chemin->x] != WALL && ma_map[chemin->y-1][chemin->x] != SNAKE_BODY && ma_map[chemin->y-1][chemin->x] != SNAKE_HEAD){
-        ma_map[chemin->y-1][chemin->x] = WALL; //petit mur comme ca on y retourne pas
+      if (ma_map[chemin->y-1][chemin->x] != WALL && ma_map[chemin->y-1][chemin->x] != SNAKE_BODY && ma_map[chemin->y-1][chemin->x] != SNAKE_HEAD && ma_map[chemin->y-1][chemin->x] != SNAKE_TAIL){
+        ma_map[chemin->y-1][chemin->x] = WALL; 
         bfs new = malloc(sizeof(struct liste_BFS));
         new->y = chemin->y-1;
         new->x = chemin->x;
-        new->prec = chemin;
+        new->premiere_action = chemin->premiere_action;
         fin->next = new;
         fin = new;
       }
-      if (ma_map[chemin->y][chemin->x+1] != WALL && ma_map[chemin->y][chemin->x+1] != SNAKE_BODY && ma_map[chemin->y][chemin->x+1] != SNAKE_HEAD){
+      if (ma_map[chemin->y][chemin->x+1] != WALL && ma_map[chemin->y][chemin->x+1] != SNAKE_BODY && ma_map[chemin->y][chemin->x+1] != SNAKE_HEAD && ma_map[chemin->y][chemin->x+1] != SNAKE_TAIL){
         ma_map[chemin->y][chemin->x+1] = WALL;
         bfs new = malloc(sizeof(struct liste_BFS));
         new->y = chemin->y;
         new->x = chemin->x+1;
-        new->prec = chemin;
+        new->premiere_action = chemin->premiere_action;
         fin->next = new;
         fin = new;
       }
-      if (ma_map[chemin->y+1][chemin->x] != WALL && ma_map[chemin->y+1][chemin->x] != SNAKE_BODY && ma_map[chemin->y+1][chemin->x] != SNAKE_HEAD){
+      if (ma_map[chemin->y+1][chemin->x] != WALL && ma_map[chemin->y+1][chemin->x] != SNAKE_BODY && ma_map[chemin->y+1][chemin->x] != SNAKE_HEAD && ma_map[chemin->y+1][chemin->x] != SNAKE_TAIL){
         ma_map[chemin->y+1][chemin->x] = WALL;
         bfs new = malloc(sizeof(struct liste_BFS));
         new->y = chemin->y+1;
         new->x = chemin->x;
-        new->prec = chemin;
+        new->premiere_action = chemin->premiere_action;
         fin->next = new;
         fin = new;
       }
-      if (ma_map[chemin->y][chemin->x-1] != WALL && ma_map[chemin->y][chemin->x-1] != SNAKE_BODY && ma_map[chemin->y][chemin->x-1] != SNAKE_HEAD){
+      if (ma_map[chemin->y][chemin->x-1] != WALL && ma_map[chemin->y][chemin->x-1] != SNAKE_BODY && ma_map[chemin->y][chemin->x-1] != SNAKE_HEAD && ma_map[chemin->y][chemin->x-1] != SNAKE_TAIL){
         bfs new = malloc(sizeof(struct liste_BFS));
         ma_map[chemin->y][chemin->x-1] = WALL; 
         new->y = chemin->y;
         new->x = chemin->x-1;
-        new->prec = chemin;
+        new->premiere_action = chemin->premiere_action;
         fin->next = new;
         fin = new;
       }
@@ -216,25 +243,10 @@ action parcours_largeur(char * * map,int mapxsize,int mapysize, int x_debut, int
   }
   action a = -1;
   if(ok){
-    while(fin->prec->prec != NULL){
-      fin = fin->prec;
+    a = fin->premiere_action;
     }
-    if(fin->prec->x > fin->x){
-      a = WEST;
-    }
-    if(fin->prec->x < fin->x){
-      a = EAST;
-    }
-    if(fin->prec->y > fin->y){
-      a = NORTH;
-    }
-    if(fin->prec->y < fin->y){
-      a = SOUTH;
-    }
-  }
 //free
-  bfs temp1 = fin->prec;
-  while (temp1!=NULL){
+  while(temp1!=NULL){
     bfs temp2 = temp1;
     temp1 = temp1->next;
     free(temp2);
@@ -251,33 +263,31 @@ action victoire(char * * map, int mapxsize, int mapysize, snake_list s, action l
 // si ya pas aleatoire - normalement ya mais bon -
   int y_serpent = s->y;
   int x_serpent = s->x;
-  action BFS_tete_pomme = parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS);
-  if(BFS_tete_pomme != -1){
-    switch(BFS_tete_pomme) { 
-    case NORTH: 
-      if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent-1,SNAKE_TAIL) != -1){
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
+  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL) != -1 || s->next == NULL)){
+        return NORTH;
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
+  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL) != -1 || s->next == NULL)){
         return NORTH;
       }
-      break;
-    case EAST:
-      if(parcours_largeur(map,mapxsize,mapysize,x_serpent+1,y_serpent,SNAKE_TAIL) != -1){
-        return EAST;
-      }
-      break;
-    case SOUTH: 
-      if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent+1,SNAKE_TAIL) != -1){
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
+  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL) != -1 || s->next == NULL)){
         return NORTH;
       }
-      break;
-    case WEST: 
-      if(parcours_largeur(map,mapxsize,mapysize,x_serpent-1,y_serpent,SNAKE_TAIL) != -1){
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
+  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL) != -1 || s->next == NULL)){
         return NORTH;
       }
-      break;
+  if(parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,BONUS, NORTH) != -1 
+  && (parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL) != -1 || s->next == NULL)){
+        return NORTH;
+      }
     }
   }
+  printf("DEBUG 1");
   action BFS_tete_queue = parcours_largeur(map,mapxsize,mapysize,x_serpent,y_serpent,SNAKE_TAIL);
   if(BFS_tete_queue != -1){
+    printf("DEBUG 2");
     return BFS_tete_queue;
   }
   return aleatoire(map,mapxsize,mapysize,s,last_action);
@@ -292,8 +302,8 @@ action snake(
 	     ) {
   action a; // action to choose and return
   
-  a = victoire_ou_defaite_si_la_map_ne_convient_pas(map,mapxsize,mapysize,s,last_action);
-  // a = victoire(map,mapxsize,mapysize,s,last_action);
+  // a = victoire_ou_defaite_si_la_map_ne_convient_pas(map,mapxsize,mapysize,s,last_action);
+  a = victoire(map,mapxsize,mapysize,s,last_action);
   // a = aleatoire(map,mapxsize,mapysize,s,last_action);
   
   return a; // answer to the game engine
