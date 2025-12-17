@@ -195,7 +195,10 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
       break;
     }
   }
-  return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL); //ETAPE 2 : suivre sa queue si pas de chemin vers la pomme licite
+  if((map[s->y-1][s->x]==PATH  || map[s->y][s->x+1]==PATH ||  map[s->y+1][s->x]==PATH || map[s->y][s->x-1]==PATH) //ETAPE 2 : si chemin vers la pomme non licite, faire de l'aleatoire a conditon que la tete colle la queue (late game)
+   &&(map[s->y-1][s->x]==SNAKE_TAIL || map[s->y][s->x+1]==SNAKE_TAIL || map[s->y+1][s->x]==SNAKE_TAIL || map[s->y][s->x-1]==SNAKE_TAIL));
+    return aleatoire(map,mapxsize,mapysize,s,last_action);
+  return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL); //ETAPE 3 : suivre sa queue
 }
 
 action snake(
