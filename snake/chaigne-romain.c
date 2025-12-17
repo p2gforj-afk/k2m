@@ -195,9 +195,40 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
       break;
     }
   }
-  if((map[s->y-1][s->x]==PATH  || map[s->y][s->x+1]==PATH ||  map[s->y+1][s->x]==PATH || map[s->y][s->x-1]==PATH) //ETAPE 2 : si chemin vers la pomme non licite, faire de l'aleatoire a conditon que la tete colle la queue (late game)
-   &&(map[s->y-1][s->x]==SNAKE_TAIL || map[s->y][s->x+1]==SNAKE_TAIL || map[s->y+1][s->x]==SNAKE_TAIL || map[s->y][s->x-1]==SNAKE_TAIL));
-    return aleatoire(map,mapxsize,mapysize,s,last_action);
+  // ETAPE 2 : check que la ou on dives une des cases voisines soit l'avant derniere du snake
+  if (map[s->y-1][s->x]==SNAKE_TAIL || map[s->y][s->x+1]==SNAKE_TAIL || map[s->y+1][s->x]==SNAKE_TAIL || map[s->y][s->x-1]==SNAKE_TAIL){
+    snake_list ptail = s;
+    while(ptail->next->c != SNAKE_TAIL){
+      ptail = ptail->next;
+    }
+    int clef = 0;
+    if((map[s->y-1][s->x]==PATH) &&(
+      ((s->y-2 == ptail->y) && (s->x == ptail->x))   ||
+      ((s->y-1 == ptail->y) && (s->x+1 == ptail->x)) ||
+      ((s->y == ptail->y)   && (s->x == ptail->x))   ||
+      ((s->y-1 == ptail->y) && (s->x-1 == ptail->x)) ))
+      clef ++;
+    if((map[s->y][s->x+1]==PATH) &&(
+      ((s->y-1 == ptail->y) && (s->x+1 == ptail->x)) ||
+      ((s->y == ptail->y)   && (s->x+2 == ptail->x)) ||
+      ((s->y+1 == ptail->y) && (s->x+1 == ptail->x)) ||
+      ((s->y == ptail->y)   && (s->x == ptail->x))   ))
+      clef ++;
+    if((map[s->y+1][s->x]==PATH) &&(
+      ((s->y == ptail->y) && (s->x == ptail->x))     ||
+      ((s->y+1 == ptail->y) && (s->x+1 == ptail->x)) ||
+      ((s->y+2 == ptail->y)   && (s->x == ptail->x)) ||
+      ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) ))
+      clef ++;
+    if((map[s->y][s->x-1]==PATH) &&(
+      ((s->y-1 == ptail->y) && (s->x-1 == ptail->x)) ||
+      ((s->y == ptail->y)   && (s->x == ptail->x))   ||
+      ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) ||
+      ((s->y == ptail->y)   && (s->x-2 == ptail->x)) ))
+      clef ++;
+    if (clef == 1)
+      return aleatoire(map,mapxsize,mapysize,s,last_action);
+  }
   return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL); //ETAPE 3 : suivre sa queue
 }
 
@@ -209,11 +240,10 @@ action snake(
 	     action last_action // last action made, set to -1 in the beginning 
 	     ) {
   if(last_action == - 1)
-    srand(time(NULL)); //permet l'utilisation massive de rand
+    srand(time(NULL)); //on initialise la pool d'entropie
   action a; // action to choose and return
   // a = victoire_ou_defaite_si_la_map_ne_convient_pas(map,mapxsize,mapysize,s,last_action);
   a = presque_victoire(map,mapxsize,mapysize,s,last_action);
-  // a = aleatoire(map,mapxsize,mapysize,s,last_action);
   return a; // answer to the game engine
 }
 /*
