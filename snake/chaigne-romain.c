@@ -196,40 +196,49 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
     }
   }
   // ETAPE 2 : check que la ou on dives une des cases voisines soit l'avant derniere du snake
-  if (map[s->y-1][s->x]==SNAKE_TAIL || map[s->y][s->x+1]==SNAKE_TAIL || map[s->y+1][s->x]==SNAKE_TAIL || map[s->y][s->x-1]==SNAKE_TAIL){
+  if ((map[s->y-1][s->x]==SNAKE_TAIL || map[s->y][s->x+1]==SNAKE_TAIL || map[s->y+1][s->x]==SNAKE_TAIL || map[s->y][s->x-1]==SNAKE_TAIL) 
+      && map[s->y-1][s->x]!=BONUS && map[s->y][s->x+1]!=BONUS && map[s->y+1][s->x]!=BONUS && map[s->y][s->x-1]!=BONUS){
     snake_list ptail = s;
     while(ptail->next->c != SNAKE_TAIL){
       ptail = ptail->next;
     }
-    int clef = 0;
-    if((map[s->y-1][s->x]==PATH) &&(
-      ((s->y-2 == ptail->y) && (s->x == ptail->x))   ||
-      ((s->y-1 == ptail->y) && (s->x+1 == ptail->x)) ||
-      ((s->y == ptail->y)   && (s->x == ptail->x))   ||
-      ((s->y-1 == ptail->y) && (s->x-1 == ptail->x)) ))
-      clef ++;
-    if((map[s->y][s->x+1]==PATH) &&(
-      ((s->y-1 == ptail->y) && (s->x+1 == ptail->x)) ||
-      ((s->y == ptail->y)   && (s->x+2 == ptail->x)) ||
-      ((s->y+1 == ptail->y) && (s->x+1 == ptail->x)) ||
-      ((s->y == ptail->y)   && (s->x == ptail->x))   ))
-      clef ++;
-    if((map[s->y+1][s->x]==PATH) &&(
-      ((s->y == ptail->y) && (s->x == ptail->x))     ||
-      ((s->y+1 == ptail->y) && (s->x+1 == ptail->x)) ||
-      ((s->y+2 == ptail->y)   && (s->x == ptail->x)) ||
-      ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) ))
-      clef ++;
-    if((map[s->y][s->x-1]==PATH) &&(
-      ((s->y-1 == ptail->y) && (s->x-1 == ptail->x)) ||
-      ((s->y == ptail->y)   && (s->x == ptail->x))   ||
-      ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) ||
-      ((s->y == ptail->y)   && (s->x-2 == ptail->x)) ))
-      clef ++;
-    if (clef == 1)
+    int clef1 = 0;
+    int clef2 = 0;
+    if(map[s->y-1][s->x]==PATH){
+      clef1 ++;
+      if(((s->y-2 == ptail->y) && (s->x == ptail->x))   ||
+         ((s->y-1 == ptail->y) && (s->x+1 == ptail->x)) ||
+         ((s->y-1 == ptail->y) && (s->x-1 == ptail->x)) )
+        clef2 ++;
+    }
+    if(map[s->y][s->x+1]==PATH){
+      clef1 ++;
+      if(((s->y-1 == ptail->y) && (s->x+1 == ptail->x)) ||
+         ((s->y == ptail->y)   && (s->x+2 == ptail->x)) ||
+         ((s->y+1 == ptail->y) && (s->x+1 == ptail->x)) )
+        clef2 ++;
+    }
+    if(map[s->y+1][s->x]==PATH){
+      clef1 ++;
+      if(((s->y+1 == ptail->y) && (s->x+1 == ptail->x)) ||
+         ((s->y+2 == ptail->y)   && (s->x == ptail->x)) ||
+         ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) )
+        clef2 ++;
+    }
+    if(map[s->y][s->x-1]==PATH){
+      clef1 ++;
+      if(((s->y-1 == ptail->y) && (s->x-1 == ptail->x))  ||
+         ((s->y+1 == ptail->y)   && (s->x-1 == ptail->x))||
+         ((s->y == ptail->y) && (s->x-2 == ptail->x))    )
+        clef2 ++;
+    }
+    if (clef1==1 && clef2==1)
       return aleatoire(map,mapxsize,mapysize,s,last_action);
   }
-  return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL); //ETAPE 3 : suivre sa queue
+  a = parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL); //ETAPE 3 : suivre sa queue si ce n'est pas possible (cas tres rare) aleatoire
+  if (a != -1)
+    return a;
+  return aleatoire(map,mapxsize,mapysize,s,last_action);
 }
 
 action snake(
