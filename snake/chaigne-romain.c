@@ -151,28 +151,35 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
   int y = s->y;
   action a = parcours_largeur(map, mapxsize, mapysize,x, y, BONUS); //on chercher un chemin entre la tete et la pomme
   if (a != -1) { //si le chemin existe
+    int snake_size = 0; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
+    int mapsize = ((mapxsize-2)*(mapysize-2)-1);
+    snake_list size = s;
+    while(size->next != NULL){
+      snake_size ++;
+      size = size->next;
+    }
     switch (a){ //on regarde quelle est ce chemin puis 
     case NORTH: 
-      if((parcours_largeur(map, mapxsize, mapysize, x, y-1, SNAKE_TAIL) != -1) || s->next == NULL)
+      if((parcours_largeur(map, mapxsize, mapysize, x, y-1, SNAKE_TAIL) != -1) || s->next == NULL || snake_size == mapsize)
         //on verifie qu'il existe un chemin entre la position suivante et la queue, si oui on renvoie la direction
         return NORTH;
       break;
     case SOUTH:
-      if((parcours_largeur(map, mapxsize, mapysize, x, y+1, SNAKE_TAIL) != -1 )|| s->next == NULL)
+      if((parcours_largeur(map, mapxsize, mapysize, x, y+1, SNAKE_TAIL) != -1 )|| s->next == NULL || snake_size == mapsize)
         return SOUTH;
       break;
     case EAST:
-      if((parcours_largeur(map, mapxsize, mapysize, x+1, y, SNAKE_TAIL) != -1) || s->next == NULL)
+      if((parcours_largeur(map, mapxsize, mapysize, x+1, y, SNAKE_TAIL) != -1) || s->next == NULL || snake_size == mapsize)
         return EAST;
       break;
     case WEST:
-      if((parcours_largeur(map, mapxsize, mapysize, x-1, y, SNAKE_TAIL) != -1) || s->next == NULL)
+      if((parcours_largeur(map, mapxsize, mapysize, x-1, y, SNAKE_TAIL) != -1) || s->next == NULL || snake_size == mapsize)
         return WEST;
       break;
     }
   }
   if(rand()%2 == 1){//pas de chemin safe vers la tete donc on mouline severe pour esperer avoir un chemin plus tard
-    a = parcours_largeur(map, mapxsize, mapysize,x, y, PATH);// on cherche une case adjacente safe - MOULINAGE DE PREMIERE ECHELLE -
+    a = parcours_largeur(map, mapxsize, mapysize,x, y, PATH);// on cherche une case adjacente safe
     if (a != -1) {//si cette case existe
       switch (a){// on regarde dans quelle direction est celle case
       case NORTH:
@@ -195,9 +202,8 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
       }
     }
   }
-  else{
+  else if(rand()%2 == 1){
     if (map[s->y-1][s->x]!=BONUS && map[s->y][s->x+1]!=BONUS && map[s->y+1][s->x]!=BONUS && map[s->y][s->x-1]!=BONUS){
-        // - MOULINAGE DE SECONDE ECHELLE -
         // cas tres specifique au late game, le but etant de bouger les trous restants
         // en effet le test precedent ira tres rarement dans un trou d'une seule case en late game 
         // car snake suit sa queue et pour la simple et bonne raison que je n'update pas la postion du snake lors du BFS...
