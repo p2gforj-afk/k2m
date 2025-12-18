@@ -109,10 +109,12 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       x_apple++;
     }
   }
-  char sh_map[mapysize][mapxsize]; // shadow_map 
-    for (int y = 0; y < mapysize; y++)
+  char **sh_map = malloc(sizeof(char*) * mapysize); // shadow_map 
+    for (int y = 0; y < mapysize; y++){
+      sh_map[y] = malloc(sizeof(char) * mapxsize);
       for (int x = 0; x < mapxsize; x++)
         sh_map[y][x] = map[y][x];
+    }
   snake_list sh_snake = malloc(sizeof(*sh_snake)); //shadow_snake
   sh_snake->c = ssh->c;
   sh_snake->x = ssh->x;
@@ -141,14 +143,20 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       sh_snake = sh_snake->next;
       free(tmp);
       }
-      if (parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) { //je ne vois pas ma bite apres avoir atteint la pomme
+      if (parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) { //je ne vois pas ma bite apres avoir atteint la pomme DONC on clear la shadow list qui ne convient pas
         while (*sh != NULL){
           shadow_list tmp = (*sh);
           (*sh) = (*sh)->next;
           free(tmp);
         }
+        for(int y = 0; y < mapysize; y++)
+          free(sh_map[y]);
+        free(sh_map);
         return -1;
       }
+      for(int y = 0; y < mapysize; y++)
+        free(sh_map[y]);
+      free(sh_map);
       return 0; 
     }
     sh_map[y_debut][x_debut] = SNAKE_HEAD;
@@ -210,9 +218,10 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       //update de la map mmt trivial
       sh_map[tempo->y][tempo->x] = PATH;
       free(tempo);
-      if (sh_snake->next != NULL)
+      if (sh_snake->next != NULL){
         sh_map[sh_snake_fin->y][sh_snake_fin->x] = sh_snake_fin->c;
         sh_map[sh_snake->next->y][sh_snake->next->x] = sh_snake->next->c;
+      }
     }
     else flag = false;
   }
@@ -221,6 +230,9 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
   sh_snake = sh_snake->next;
   free(tmp);
   }
+  for(int y = 0; y < mapysize; y++)
+    free(sh_map[y]);
+  free(sh_map);
   return -1;
 
 
