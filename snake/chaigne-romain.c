@@ -239,7 +239,7 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
       return aleatoire(map,mapxsize,mapysize,s,last_action);
   }
   //enfin si tout cela est impossible on suit notre queue
-  a = parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
+  return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
 }
 /*
   snake function called from the main program
