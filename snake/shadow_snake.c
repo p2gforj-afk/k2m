@@ -161,12 +161,15 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       int ny = y_debut + dy[rd[i]];
       if (sh_map[ny][nx] != WALL && sh_map[ny][nx] != SNAKE_BODY && sh_map[ny][nx] != SNAKE_HEAD) { //si voisin safe
         // va falloir conserver le meilleur i voila
+        printf("Checking move nx=%d ny=%d dist=%d\n", nx, ny, NY(nx,ny,x_apple,y_apple));
         if(NY(nx,ny,x_apple,y_apple) < min || min == -1){
           min = NY(nx,ny,x_apple,y_apple);
           shadow_id = i;
+          
         }
       } 
     }
+    printf("Shadow step: x=%d y=%d shadow_id=%d\n", x_debut, y_debut, shadow_id);
     if(shadow_id != -1){
       x_debut = x_debut + dx[rd[shadow_id]]; //update de la position dans le a*
       y_debut = y_debut + dy[rd[shadow_id]];
