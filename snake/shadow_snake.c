@@ -98,7 +98,11 @@ struct SHADOW{
 typedef struct SHADOW *shadow_list; 
 
 int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,snake_list ssh,shadow_list *sh){
-  shadow_list last_move = *sh; //sh est vide quand on rendre la dedans
+  shadow_list last_move = *sh;
+  if(last_move != NULL){
+    while(last_move->next != NULL)
+        last_move = last_move->next;
+  }
 
   int y_apple = 1; // position de la pomme
   int x_apple = 1;
