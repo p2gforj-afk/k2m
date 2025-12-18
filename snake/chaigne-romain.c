@@ -181,7 +181,7 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
   if(rand()%2 == 1){//pas de chemin safe vers la tete donc on mouline severe pour esperer avoir un chemin plus tard
     a = parcours_largeur(map, mapxsize, mapysize,x, y, PATH);// on cherche une case adjacente safe
     if (a != -1) {//si cette case existe
-      switch (a){// on regarde dans quelle direction est celle case
+      switch (a){// on regarde dans quelle direction est cette case
       case NORTH:
         if(parcours_largeur(map, mapxsize, mapysize, x, y-1, SNAKE_TAIL) != -1)
             //on verifie que une fois sur cette case on pourra toujours rejoindre notre queue,
