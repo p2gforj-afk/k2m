@@ -151,7 +151,7 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
   int y = s->y;
   action a = parcours_largeur(map, mapxsize, mapysize,x, y, BONUS); //on chercher un chemin entre la tete et la pomme
   if (a != -1) { //si le chemin existe
-    int snake_size = 0; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
+    int snake_size = 1; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
     int mapsize = ((mapxsize-2)*(mapysize-2)-1);
     snake_list size = s;
     while(size->next != NULL){
