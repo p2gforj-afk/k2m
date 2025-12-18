@@ -171,72 +171,75 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
       break;
     }
   }
-  //pas de chemin safe vers la tete donc on mouline severe pour esperer avoir un chemin plus tard
-  a = parcours_largeur(map, mapxsize, mapysize,x, y, PATH);// on cherche une case adjacente safe - MOULINAGE DE PREMIERE ECHELLE -
-  if (a != -1) {//si cette case existe
-    switch (a){// on regarde dans quelle direction est celle case
-    case NORTH:
-      if(parcours_largeur(map, mapxsize, mapysize, x, y-1, SNAKE_TAIL) != -1)
-          //on verifie que une fois sur cette case on pourra toujours rejoindre notre queue,
-        return NORTH;
-      break;
-    case SOUTH:
-      if(parcours_largeur(map, mapxsize, mapysize, x, y+1, SNAKE_TAIL) != -1 )
-        return SOUTH;
-      break;
-    case EAST:
-      if(parcours_largeur(map, mapxsize, mapysize, x+1, y, SNAKE_TAIL) != -1)
-        return EAST;
-      break;
-    case WEST:
-      if(parcours_largeur(map, mapxsize, mapysize, x-1, y, SNAKE_TAIL) != -1)
-        return WEST;
-      break;
+  if(rand()%2 == 1){//pas de chemin safe vers la tete donc on mouline severe pour esperer avoir un chemin plus tard
+    a = parcours_largeur(map, mapxsize, mapysize,x, y, PATH);// on cherche une case adjacente safe - MOULINAGE DE PREMIERE ECHELLE -
+    if (a != -1) {//si cette case existe
+      switch (a){// on regarde dans quelle direction est celle case
+      case NORTH:
+        if(parcours_largeur(map, mapxsize, mapysize, x, y-1, SNAKE_TAIL) != -1)
+            //on verifie que une fois sur cette case on pourra toujours rejoindre notre queue,
+          return NORTH;
+        break;
+      case SOUTH:
+        if(parcours_largeur(map, mapxsize, mapysize, x, y+1, SNAKE_TAIL) != -1 )
+          return SOUTH;
+        break;
+      case EAST:
+        if(parcours_largeur(map, mapxsize, mapysize, x+1, y, SNAKE_TAIL) != -1)
+          return EAST;
+        break;
+      case WEST:
+        if(parcours_largeur(map, mapxsize, mapysize, x-1, y, SNAKE_TAIL) != -1)
+          return WEST;
+        break;
+      }
     }
   }
-  if (map[s->y-1][s->x]!=BONUS && map[s->y][s->x+1]!=BONUS && map[s->y+1][s->x]!=BONUS && map[s->y][s->x-1]!=BONUS){
-      // - MOULINAGE DE SECONDE ECHELLE -
-      // cas tres specifique au late game, le but etant de bouger les trous restants
-      // en effet le test precedent ira tres rarement dans un trou d'une seule case en late game 
-      // car snake suit sa queue et pour la simple et bonne raison que je n'update pas la postion du snake lors du BFS...
-      // on verifie ici que la pomme n'est pas adjacente a la tete sinon l'aleatoire qui va arriver peut faire de la dingz
-    snake_list ptail = s; //va correspondre a l'avant dernier maillon du snake
-    while(ptail->next->c != SNAKE_TAIL){
-      ptail = ptail->next;
+  else{
+    if (map[s->y-1][s->x]!=BONUS && map[s->y][s->x+1]!=BONUS && map[s->y+1][s->x]!=BONUS && map[s->y][s->x-1]!=BONUS){
+        // - MOULINAGE DE SECONDE ECHELLE -
+        // cas tres specifique au late game, le but etant de bouger les trous restants
+        // en effet le test precedent ira tres rarement dans un trou d'une seule case en late game 
+        // car snake suit sa queue et pour la simple et bonne raison que je n'update pas la postion du snake lors du BFS...
+        // on verifie ici que la pomme n'est pas adjacente a la tete sinon l'aleatoire qui va arriver peut faire de la dingz
+      snake_list ptail = s; //va correspondre a l'avant dernier maillon du snake
+      while(ptail->next->c != SNAKE_TAIL){
+        ptail = ptail->next;
+      }
+      int clef1 = 0; //premier verrou, car on veut pas vrmt que l'appel a aleatoire soit aleatoire
+      int clef2 = 0; //second verrou, pour s'assurer que l'on pourra rejoindre notre queue apres
+      if(map[s->y-1][s->x]==PATH){ //determine si un trou est la
+        clef1 ++;
+        if(((s->y-2 == ptail->y) && (s->x == ptail->x))  ||
+          ((s->y-1 == ptail->y) && (s->x+1 == ptail->x)) ||
+          ((s->y-1 == ptail->y) && (s->x-1 == ptail->x)) )
+          //assure que l'on pourra rejoindre notre queue apres
+          clef2 ++;
+      }
+      if(map[s->y][s->x+1]==PATH){
+        clef1 ++;
+        if(((s->y-1 == ptail->y) && (s->x+1 == ptail->x))||
+          ((s->y == ptail->y) && (s->x+2 == ptail->x))   ||
+          ((s->y+1 == ptail->y) && (s->x+1 == ptail->x)) )
+          clef2 ++;
+      }
+      if(map[s->y+1][s->x]==PATH){
+        clef1 ++;
+        if(((s->y+1 == ptail->y) && (s->x+1 == ptail->x))||
+          ((s->y+2 == ptail->y) && (s->x == ptail->x))   ||
+          ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) )
+          clef2 ++;
+      }
+      if(map[s->y][s->x-1]==PATH){
+        clef1 ++;
+        if(((s->y-1 == ptail->y) && (s->x-1 == ptail->x))||
+          ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) ||
+          ((s->y == ptail->y) && (s->x-2 == ptail->x))   )
+          clef2 ++;
+      }
+      if (clef1==1 && clef2==1) // si on a bien une seule case dispo et que cette derniere est safe on y go
+        return aleatoire(map,mapxsize,mapysize,s,last_action);
     }
-    int clef1 = 0; //premier verrou, car on veut pas vrmt que l'appel a aleatoire soit aleatoire
-    int clef2 = 0; //second verrou, pour s'assurer que l'on pourra rejoindre notre queue apres
-    if(map[s->y-1][s->x]==PATH){ //determine si un trou est la
-      clef1 ++;
-      if(((s->y-2 == ptail->y) && (s->x == ptail->x))  ||
-        ((s->y-1 == ptail->y) && (s->x+1 == ptail->x)) ||
-        ((s->y-1 == ptail->y) && (s->x-1 == ptail->x)) )
-        //assure que l'on pourra rejoindre notre queue apres
-        clef2 ++;
-    }
-    if(map[s->y][s->x+1]==PATH){
-      clef1 ++;
-      if(((s->y-1 == ptail->y) && (s->x+1 == ptail->x))||
-        ((s->y == ptail->y) && (s->x+2 == ptail->x))   ||
-        ((s->y+1 == ptail->y) && (s->x+1 == ptail->x)) )
-        clef2 ++;
-    }
-    if(map[s->y+1][s->x]==PATH){
-      clef1 ++;
-      if(((s->y+1 == ptail->y) && (s->x+1 == ptail->x))||
-        ((s->y+2 == ptail->y) && (s->x == ptail->x))   ||
-        ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) )
-        clef2 ++;
-    }
-    if(map[s->y][s->x-1]==PATH){
-      clef1 ++;
-      if(((s->y-1 == ptail->y) && (s->x-1 == ptail->x))||
-        ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) ||
-        ((s->y == ptail->y) && (s->x-2 == ptail->x))   )
-        clef2 ++;
-    }
-    if (clef1==1 && clef2==1) // si on a bien une seule case dispo et que cette derniere est safe on y go
-      return aleatoire(map,mapxsize,mapysize,s,last_action);
   }
   //enfin si tout cela est impossible on suit notre queue
   return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
