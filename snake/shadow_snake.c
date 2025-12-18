@@ -113,18 +113,19 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
     for (int y = 0; y < mapysize; y++)
       for (int x = 0; x < mapxsize; x++)
         sh_map[y][x] = map[y][x];
-                                                                                                                                                          snake_list sh_snake = malloc(sizeof(*sh_snake)); //shadow_snake
-                                                                                                                                                          sh_snake->c = ssh->c;
-                                                                                                                                                          sh_snake->x = ssh->x;
-                                                                                                                                                          sh_snake->y = ssh->y;
-                                                                                                                                                          snake_list sh_snake_fin = sh_snake;
-                                                                                                                                                          while(ssh->next != NULL){
-                                                                                                                                                            snake_list new = malloc(sizeof(*new));
-                                                                                                                                                            new->c = ssh->next->c;
-                                                                                                                                                            new->x = ssh->next->x;
-                                                                                                                                                            new->y = ssh->next->y;
-                                                                                                                                                            sh_snake_fin->next = new;
-                                                                                                                                                            ssh = ssh->next;
+  snake_list sh_snake = malloc(sizeof(*sh_snake)); //shadow_snake
+  sh_snake->c = ssh->c;
+  sh_snake->x = ssh->x;
+  sh_snake->y = ssh->y;
+  snake_list sh_snake_fin = sh_snake;
+  while(ssh->next != NULL){
+    snake_list new = malloc(sizeof(*new));
+    new->c = ssh->next->c;
+    new->x = ssh->next->x;
+    new->y = ssh->next->y;
+    sh_snake_fin->next = new;
+    sh_snake_fin = sh_snake_fin->next;
+    ssh = ssh->next;
   }
   sh_snake_fin->next = NULL;
 
@@ -139,6 +140,14 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       snake_list tmp = sh_snake;
       sh_snake = sh_snake->next;
       free(tmp);
+      }
+      if (parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) { //je ne vois pas ma bite apres avoir atteint la pomme
+        while (*sh != NULL){
+          shadow_list tmp = (*sh);
+          (*sh) = (*sh)->next;
+          free(tmp);
+        }
+        return -1;
       }
       return 0; 
     }
@@ -201,8 +210,8 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       //update de la map mmt trivial
       sh_map[tempo->y][tempo->x] = PATH;
       free(tempo);
-      sh_map[sh_snake_fin->y][sh_snake_fin->x] = sh_snake_fin->c;
       if (sh_snake->next != NULL)
+        sh_map[sh_snake_fin->y][sh_snake_fin->x] = sh_snake_fin->c;
         sh_map[sh_snake->next->y][sh_snake->next->x] = sh_snake->next->c;
     }
     else flag = false;
