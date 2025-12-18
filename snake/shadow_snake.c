@@ -169,8 +169,12 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       shadow_list new = malloc(sizeof(*new)); //ajout du move a shadow_move
       new->move = dirs[shadow_id];
       new->next = NULL;
-      last_move->next = new;
-      last_move = last_move->next;
+      if (last_move == *sh)
+        last_move = new;
+      else {
+        last_move->next = new;
+        last_move = last_move->next;
+      }
 
       snake_list new_head = malloc(sizeof(*new_head));//update shadow snake et se souvenir de l'ancienne position de la queue ie tempo
       new_head->c = SNAKE_HEAD;
