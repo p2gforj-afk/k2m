@@ -142,6 +142,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       }
       return 0; 
     }
+    sh_map[y_debut][x_debut] == SNAKE_HEAD;
     int rd[4] = {-1,-1,-1,-1};
     for(int k = 0; k<4; k++){ 
       int j = rand()%4;
