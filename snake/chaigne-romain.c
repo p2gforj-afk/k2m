@@ -1,24 +1,19 @@
 // compiler's header files
 #include <stdbool.h> // bool, true, false
-#include <stdlib.h> // rand
+#include <stdlib.h> // rand, srand
 #include <stdio.h> // printf
-#include <time.h>
+#include <time.h> // time
 
 // main program's header file
 #include "snake_def.h"
 #include "snake_dec.h"
 
 // student name goes here
-char * student="Chaigne"; 
+char * student="Chaigne"; //c'est moi
 
 // prototypes of the local/private functions
 static void printAction(action);
 static void printBoolean(bool);
-
-/*
-  snake function called from the main program
-  This function randomly selects a valid move for Snake based on its current position on the game map
-*/
 
 action aleatoire(char * * map, int mapxsize, int mapysize, snake_list s, action last_action ){
   bool ok=false;  // ok will be set to true as soon as a randomly selected action is valid
@@ -232,7 +227,10 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
     return a;
   return aleatoire(map,mapxsize,mapysize,s,last_action);
 }
-
+/*
+  snake function called from the main program
+  call presque_victoire because why not
+*/
 action snake(
 	     char * * map, // array of chars modeling the game map
 	     int mapxsize, // x size of the map
@@ -241,10 +239,8 @@ action snake(
 	     action last_action // last action made, set to -1 in the beginning 
 	     ) {
   if(last_action == - 1)
-    srand(time(NULL)); //on initialise la pool d'entropie
-  action a; // action to choose and return
-  a = presque_victoire(map,mapxsize,mapysize,s,last_action);
-  return a; // answer to the game engine
+    srand(time(NULL)); //on initialise la seed de l'execution
+  return presque_victoire(map,mapxsize,mapysize,s,last_action);
 }
 /*
   printAction function:
