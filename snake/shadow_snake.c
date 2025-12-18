@@ -97,7 +97,7 @@ struct SHADOW{
 };
 typedef struct SHADOW *shadow_list; 
 
-int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,snake_list ssh,shadow_list * sh){
+int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,snake_list ssh,shadow_list *sh){
   shadow_list last_move = *sh; //sh est vide quand on rendre la dedans
 
   int y_apple = 1; // position de la pomme
@@ -190,7 +190,9 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       //update de la map mmt trivial
       sh_map[tempo->y][tempo->x] == PATH;
       free(tempo);
-      sh_map[sh_snake->y][sh_snake->x] == SNAKE_HEAD;
+      sh_map[sh_snake_fin->y][sh_snake_fin->x] == sh_snake_fin->c;
+      if (sh_snake->next != NULL);
+        sh_map[sh_snake->next->y][sh_snake->next->x] == sh_snake->next->c;
     }
     else flag = false;
   }
@@ -207,7 +209,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
 }
 
 
-action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action last_action,shadow_list * sh) {
+action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action last_action,shadow_list *sh) {
 
   while (*sh != NULL){
     action a = (*sh)->move;
@@ -218,7 +220,7 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
   }
   int x = s->x;
   int y = s->y;
-  if (a_shadow_star(map, mapxsize, mapysize,x, y, s,&sh) == -1) 
+  if (a_shadow_star(map, mapxsize, mapysize,x, y, s,&(*sh)) == -1) 
     return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
   action a = (*sh)->move;
   shadow_list tmp = (*sh);
