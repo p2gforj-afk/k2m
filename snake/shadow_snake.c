@@ -100,6 +100,9 @@ typedef struct SHADOW *shadow_list;
 int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,snake_list ssh,shadow_list *sh){
   shadow_list last_move = *sh;
 
+  int x_chauchemar = x_debut;
+  int y_chauchemar = y_debut;
+
   int y_apple = 1; // position de la pomme
   int x_apple = 1;
   while(map[y_apple][x_apple] != BONUS){
@@ -143,7 +146,13 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       sh_snake = sh_snake->next;
       free(tmp);
       }
-      if (parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) { //je ne vois pas ma bite apres avoir atteint la pomme DONC on clear la shadow list qui ne convient pas
+      if ((ssh->x == x_chauchemar) && (ssh->y == y_chauchemar)){        
+        for(int y = 0; y < mapysize; y++)
+          free(sh_map[y]);
+        free(sh_map);
+        return 0;
+      }
+      if ((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1)){ 
         while (*sh != NULL){
           shadow_list tmp = (*sh);
           (*sh) = (*sh)->next;
