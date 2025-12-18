@@ -210,6 +210,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         sh_map[sh_snake->next->y][sh_snake->next->x] = sh_snake->next->c;
     }
     else flag = false;
+    return 0;
   }
   while (sh_snake != NULL) {   //free shadow_snake
   snake_list tmp = sh_snake;
