@@ -211,6 +211,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
     }
     else flag = false;
     return 0;
+    exit(EXIT_FAILURE);
   }
   while (sh_snake != NULL) {   //free shadow_snake
   snake_list tmp = sh_snake;
