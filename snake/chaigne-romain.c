@@ -202,7 +202,7 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
       }
     }
   }
-  if(rand()%2 == 1){
+  if(rand()%2 == 0){
     if (map[s->y-1][s->x]!=BONUS && map[s->y][s->x+1]!=BONUS && map[s->y+1][s->x]!=BONUS && map[s->y][s->x-1]!=BONUS){
         // cas tres specifique au late game, le but etant de bouger les trous restants
         // en effet le test precedent ira tres rarement dans un trou d'une seule case en late game 
