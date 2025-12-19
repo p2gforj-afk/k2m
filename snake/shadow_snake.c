@@ -11,9 +11,9 @@
 // student name goes here
 char * student="Chaigne"; //c'est moi
 
-/*
-  SERT SEULEMENT A REJOINDRE LA QUEUE LORSQUE A* ECHOUE
-*/
+#define ALEA 1 // entier de 1 a inf, augmete avec la golemie du snake
+
+
 struct liste_BFS { //liste chainee pour explorer la map avec un parcours en largeur
     int x; //coordonne en x de la case
     int y; //coordonne en y de la case
@@ -196,7 +196,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       if (sh_map[ny][nx] != WALL && sh_map[ny][nx] != SNAKE_BODY && sh_map[ny][nx] != SNAKE_HEAD) { //si voisin safe
         // va falloir conserver le meilleur i voila
         if(NY(nx,ny,x_apple,y_apple) < min || min == -1){
-          if(rand()%2 == 1) //vous vous en doutez on fait des choses etranges ici
+          if(rand()%ALEA == 0) //vous vous en doutez on fait des choses etranges ici
             min = NY(nx,ny,x_apple,y_apple);
           shadow_id = i;
         }
