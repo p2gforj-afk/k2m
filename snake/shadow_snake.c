@@ -147,19 +147,19 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         free(sh_map);
         return 0;
       }
-      int snake_size = 1; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
       int mapsize = -1;
       for (int y = 0; y < mapysize; y++)
         for (int x = 0; x < mapxsize; x++)
           if (map[y][x] !=WALL)
             mapsize ++;
+      int snake_size = 1; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
       snake_list size = ssh;
       while(size->next != NULL){
         snake_size ++;
         size = size->next;
       }
+      printf("mapsize : %d, size_snake : %d\n",mapsize, snake_size);
       if ((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) && (snake_size < mapsize)){ 
-        printf("mapsize : %d, size_snake : %d\n",mapsize, snake_size);
         while (*sh != NULL){ //clear de la shadow list car chemin guezz
           shadow_list tmp = (*sh);
           (*sh) = (*sh)->next;
