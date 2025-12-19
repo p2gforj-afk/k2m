@@ -77,9 +77,13 @@ action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_d
   return -1; //on renvoie -1, aucun chemin n'existe
 }
 
+
+
+
+
 typedef struct { int x, y; } Point;
-bool flood_fill(char **map, int mapxsize, int mapysize, int sx, int sy, bool *visited, bool *has_tail, int *size) {
-    // simple pile pour DFS
+
+void flood_fill(char **map, int mapxsize, int mapysize, int sx, int sy, bool *visited, int *size, bool *has_tail) {
     Point stack[mapxsize * mapysize];
     int top = 0;
     stack[top++] = (Point){sx, sy};
@@ -87,17 +91,17 @@ bool flood_fill(char **map, int mapxsize, int mapysize, int sx, int sy, bool *vi
     *size = 0;
     *has_tail = false;
 
-    int dx[4] = {0,0,1,-1};
-    int dy[4] = {-1,1,0,0};
+    int dx[4] = {0, 0, 1, -1};
+    int dy[4] = {-1, 1, 0, 0};
 
-    while(top > 0){
+    while(top > 0) {
         Point p = stack[--top];
         (*size)++;
 
-        // vérifier si on a la queue
+        // détecte si la région contient la queue
         if(map[p.y][p.x] == SNAKE_TAIL) *has_tail = true;
 
-        for(int d=0; d<4; d++){
+        for(int d=0; d<4; d++) {
             int nx = p.x + dx[d];
             int ny = p.y + dy[d];
             if(nx < 0 || nx >= mapxsize || ny < 0 || ny >= mapysize) continue;
@@ -107,27 +111,28 @@ bool flood_fill(char **map, int mapxsize, int mapysize, int sx, int sy, bool *vi
             visited[ny*mapxsize + nx] = true;
         }
     }
-    return true;
 }
-
 bool creates_bad_region(char **map, int mapxsize, int mapysize) {
     bool visited[mapysize * mapxsize];
     for(int i=0;i<mapxsize*mapysize;i++) visited[i]=false;
 
-    for(int y=0; y<mapysize; y++){
-        for(int x=0; x<mapxsize; x++){
-            if(!visited[y*mapxsize + x] && map[y][x] == PATH){
-                bool has_tail = false;
+    for(int y=0; y<mapysize; y++) {
+        for(int x=0; x<mapxsize; x++) {
+            if(!visited[y*mapxsize + x] && map[y][x] == PATH) {
                 int region_size = 0;
-                flood_fill(map, mapxsize, mapysize, x, y, visited, &has_tail, &region_size);
-                if(!has_tail && (region_size % 2 == 1)){
-                    return true; // région libre impaire sans queue => soft-lock possible
+                bool has_tail = false;
+                flood_fill(map, mapxsize, mapysize, x, y, visited, &region_size, &has_tail);
+
+                // Si la région ne contient pas la queue et est impaire et taille > 1 → dangereux
+                if(!has_tail && region_size > 1 && (region_size % 2 == 1)) {
+                    return true; // soft-lock possible
                 }
             }
         }
     }
     return false; // tout est safe
 }
+
 
 int abs(int a){
   return a - 2*a*(a<0);
