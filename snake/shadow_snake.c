@@ -176,7 +176,13 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       while(action->next != NULL){
         nb_action++;
         action = action->next;
-      }
+      }    
+      int n = 1 + rand()%(mapxsize - 12);
+      printf("\033[33m"); // couleur jaune
+      for (int i = 0; i < n; i++)
+        printf("*");
+      printf("\033[0m"); // reset couleur
+
       printf("En Route(%d)\n",nb_action);
       return 0; 
     }
@@ -294,6 +300,44 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
           return WEST;
         break;
       }
+    } 
+    if (map[s->y-1][s->x]!=BONUS && map[s->y][s->x+1]!=BONUS && map[s->y+1][s->x]!=BONUS && map[s->y][s->x-1]!=BONUS){ //dive bomb
+      snake_list ptail = s; 
+      while(ptail->next->c != SNAKE_TAIL){
+        ptail = ptail->next;
+      }
+      int clef1 = 0; 
+      int clef2 = 0; 
+      if(map[s->y-1][s->x]==PATH){ 
+        clef1 ++;
+        if(((s->y-2 == ptail->y) && (s->x == ptail->x))  ||
+          ((s->y-1 == ptail->y) && (s->x+1 == ptail->x)) ||
+          ((s->y-1 == ptail->y) && (s->x-1 == ptail->x)) )
+          clef2 ++;
+      }
+      if(map[s->y][s->x+1]==PATH){
+        clef1 ++;
+        if(((s->y-1 == ptail->y) && (s->x+1 == ptail->x))||
+          ((s->y == ptail->y) && (s->x+2 == ptail->x))   ||
+          ((s->y+1 == ptail->y) && (s->x+1 == ptail->x)) )
+          clef2 ++;
+      }
+      if(map[s->y+1][s->x]==PATH){
+        clef1 ++;
+        if(((s->y+1 == ptail->y) && (s->x+1 == ptail->x))||
+          ((s->y+2 == ptail->y) && (s->x == ptail->x))   ||
+          ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) )
+          clef2 ++;
+      }
+      if(map[s->y][s->x-1]==PATH){
+        clef1 ++;
+        if(((s->y-1 == ptail->y) && (s->x-1 == ptail->x))||
+          ((s->y+1 == ptail->y) && (s->x-1 == ptail->x)) ||
+          ((s->y == ptail->y) && (s->x-2 == ptail->x))   )
+          clef2 ++;
+      }
+      if (clef1==1 && clef2==1) 
+        return aleatoire(map,mapxsize,mapysize,s,last_action);
     }
     return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
   }
