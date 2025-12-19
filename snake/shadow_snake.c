@@ -227,7 +227,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       if (sh_snake->next != NULL){
         if(sh_map[sh_snake->y][sh_snake->x] != BONUS)
           sh_map[sh_snake_fin->y][sh_snake_fin->x] = sh_snake_fin->c;
-        sh_map[sh_snake->next->y][sh_snake->next->x] = SNAKE_HEAD;
+        sh_map[sh_snake->next->y][sh_snake->next->x] = sh_snake->next->c;
       }
     }
     else flag = false;
