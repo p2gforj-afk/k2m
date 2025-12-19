@@ -78,23 +78,35 @@ action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_d
 }
 
 
-// Compte le nombre de cases accessibles depuis (x, y) avec un flood fill simple
-int count_accessible(char **map, int mapxsize, int mapysize, int x, int y) {
+// Compte toutes les cases libres dans la map
+int count_free_cells(char **map, int mapxsize, int mapysize) {
+    int count = 0;
+    for (int y = 0; y < mapysize; y++) {
+        for (int x = 0; x < mapxsize; x++) {
+            if (map[y][x] != WALL && map[y][x] != SNAKE_BODY && map[y][x] != SNAKE_HEAD) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+// Compte les cases accessibles depuis (start_x, start_y) avec flood fill
+int count_reachable(char **map, int mapxsize, int mapysize, int start_x, int start_y) {
     char temp_map[mapysize][mapxsize];
     for (int i = 0; i < mapysize; i++)
         for (int j = 0; j < mapxsize; j++)
             temp_map[i][j] = map[i][j];
     
     int count = 0;
-    // Simple DFS/stack pour flood fill
     int stack_x[mapxsize * mapysize];
     int stack_y[mapxsize * mapysize];
     int top = 0;
     
-    stack_x[top] = x;
-    stack_y[top] = y;
+    stack_x[top] = start_x;
+    stack_y[top] = start_y;
     top++;
-    temp_map[y][x] = WALL;
+    temp_map[start_y][start_x] = WALL;
     
     int dx[4] = {0, 0, 1, -1};
     int dy[4] = {-1, 1, 0, 0};
@@ -233,16 +245,19 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       rd[k] = j; 
     }
 
-// Remplace tout le bloc de choix de voisin dans a_shadow_star
-// À partir de "int min = -1;" jusqu'à "else flag = false;"
+// Remplace le bloc de choix de voisin dans a_shadow_star
+// De "int min = -1;" jusqu'à "else flag = false;"
 
-    // Évalue TOUS les voisins et choisis le meilleur qui ne crée pas de trou
+    int dx_local[4] = { 0,  0,  1, -1};
+    int dy_local[4] = {-1,  1,  0,  0};
+    
+    // Évalue TOUS les voisins
     int best_id = -1;
     int best_dist = -1;
     
     for (int i = 0; i < 4; i++) {
-      int nx = x_debut + dx[rd[i]];
-      int ny = y_debut + dy[rd[i]];
+      int nx = x_debut + dx_local[rd[i]];
+      int ny = y_debut + dy_local[rd[i]];
       
       // Vérifie que c'est safe de base
       if (sh_map[ny][nx] == WALL || sh_map[ny][nx] == SNAKE_BODY || sh_map[ny][nx] == SNAKE_HEAD)
@@ -250,78 +265,37 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       
       int dist = NY(nx, ny, x_apple, y_apple);
       
-      // Simule le move et vérifie la topologie
-      char saved = sh_map[ny][nx];
-      sh_map[ny][nx] = SNAKE_HEAD;
-      char saved_curr = sh_map[y_debut][x_debut];
-      sh_map[y_debut][x_debut] = SNAKE_BODY;
-      
-      // Compte les voisins libres de la nouvelle position
-      int free_neighbors_x[4];
-      int free_neighbors_y[4];
-      int nb_free = 0;
-      
-      for (int j = 0; j < 4; j++) {
-        int nnx = nx + dx[j];
-        int nny = ny + dy[j];
-        if (sh_map[nny][nnx] != WALL && 
-            sh_map[nny][nnx] != SNAKE_BODY && 
-            sh_map[nny][nnx] != SNAKE_HEAD) {
-          free_neighbors_x[nb_free] = nnx;
-          free_neighbors_y[nb_free] = nny;
-          nb_free++;
-        }
+      // ===== VÉRIFICATION TOPOLOGIQUE GLOBALE =====
+      // Simule le move complet sur une copie de la map
+      char **test_map = malloc(sizeof(char*) * mapysize);
+      for (int y = 0; y < mapysize; y++) {
+        test_map[y] = malloc(sizeof(char) * mapxsize);
+        for (int x = 0; x < mapxsize; x++)
+          test_map[y][x] = sh_map[y][x];
       }
       
-      // Vérifie que les voisins libres sont connectés entre eux
-      bool creates_hole = false;
-      if (nb_free >= 2) {
-        // Simple vérif : le premier voisin peut-il atteindre tous les autres ?
-        for (int k = 1; k < nb_free && !creates_hole; k++) {
-          // Flood fill rapide depuis free_neighbors[0]
-          char check_map[mapysize][mapxsize];
-          for (int y = 0; y < mapysize; y++)
-            for (int x = 0; x < mapxsize; x++)
-              check_map[y][x] = sh_map[y][x];
-          
-          bool reached = false;
-          int stack_x[100], stack_y[100], top = 0;
-          stack_x[top] = free_neighbors_x[0];
-          stack_y[top] = free_neighbors_y[0];
-          top++;
-          check_map[free_neighbors_y[0]][free_neighbors_x[0]] = WALL;
-          
-          while (top > 0 && !reached) {
-            top--;
-            int cx = stack_x[top];
-            int cy = stack_y[top];
-            
-            if (cx == free_neighbors_x[k] && cy == free_neighbors_y[k]) {
-              reached = true;
-              break;
-            }
-            
-            for (int d = 0; d < 4; d++) {
-              int nnx = cx + dx[d];
-              int nny = cy + dy[d];
-              if (check_map[nny][nnx] != WALL && 
-                  check_map[nny][nnx] != SNAKE_BODY && 
-                  check_map[nny][nnx] != SNAKE_HEAD) {
-                check_map[nny][nnx] = WALL;
-                stack_x[top] = nnx;
-                stack_y[top] = nny;
-                top++;
-              }
-            }
-          }
-          
-          if (!reached) creates_hole = true;
-        }
+      // Simule le déplacement du snake
+      test_map[ny][nx] = SNAKE_HEAD;
+      test_map[y_debut][x_debut] = SNAKE_BODY;
+      
+      // Si on n'a pas mangé, la queue avance (libère une case)
+      if (sh_map[ny][nx] != BONUS && sh_snake_fin != NULL) {
+        test_map[sh_snake_fin->y][sh_snake_fin->x] = PATH;
       }
       
-      // Restaure
-      sh_map[ny][nx] = saved;
-      sh_map[y_debut][x_debut] = saved_curr;
+      // Compte le nombre total de cases libres
+      int total_free = count_free_cells(test_map, mapxsize, mapysize);
+      
+      // Compte les cases accessibles depuis la nouvelle position
+      int reachable = count_reachable(test_map, mapxsize, mapysize, nx, ny);
+      
+      // Free la test_map
+      for (int y = 0; y < mapysize; y++)
+        free(test_map[y]);
+      free(test_map);
+      
+      // Si on ne peut pas atteindre toutes les cases libres = on crée un trou !
+      bool creates_hole = (reachable < total_free);
       
       // Garde ce voisin s'il est meilleur et ne crée pas de trou
       if (!creates_hole && (dist < best_dist || best_dist == -1)) {
@@ -331,8 +305,8 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
     }
     
     if (best_id != -1) {
-      int next_x = x_debut + dx[rd[best_id]]; 
-      int next_y = y_debut + dy[rd[best_id]];
+      int next_x = x_debut + dx_local[rd[best_id]]; 
+      int next_y = y_debut + dy_local[rd[best_id]];
       
       x_debut = next_x; 
       y_debut = next_y;
