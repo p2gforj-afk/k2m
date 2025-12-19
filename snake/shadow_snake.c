@@ -99,10 +99,7 @@ typedef struct SHADOW *shadow_list;
 
 int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,snake_list ssh,shadow_list *sh){
   shadow_list last_move = *sh;
-
-  int x_chauchemar = x_debut;
-  int y_chauchemar = y_debut;
-
+  snake_list sshc = ssh;
   int y_apple = 1; // position de la pomme
   int x_apple = 1;
   while(map[y_apple][x_apple] != BONUS){
@@ -147,7 +144,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       sh_snake = sh_snake->next;
       free(tmp);
       }
-      if (ssh->next == NULL){        
+      if (sshc->next == NULL){        
         for(int y = 0; y < mapysize; y++)
           free(sh_map[y]);
         free(sh_map);
