@@ -380,9 +380,9 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
   }
   int x = s->x;
   int y = s->y;
-    action b = -1;
+  // action b = -1;
   if (a_shadow_star(map, mapxsize, mapysize,x, y, s,&(*sh)) == -1){
-    b = parcours_largeur(map, mapxsize, mapysize,x, y, PATH);
+    /* b = parcours_largeur(map, mapxsize, mapysize,x, y, PATH);
     if (b != -1) {
       switch (b){
       case NORTH:
@@ -402,7 +402,8 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
           return WEST;
         break;
       }
-    } 
+    }
+    */
     return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
   }
   action a = (*sh)->move;
