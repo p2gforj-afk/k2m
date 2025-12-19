@@ -81,7 +81,7 @@ action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_d
 }
 
 
-
+//ya pas de core dump deja et il avance mais ya definivement des murs que ce salaud ne voit pas
 
 
 int abs(int a){
