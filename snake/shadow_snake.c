@@ -215,13 +215,14 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         nb_action++;
         action = action->next;
       }    
-      int n = 1 + rand()%(mapxsize - 12);
-      printf("\033[33m"); // couleur jaune
+      int n = 1 + rand()%(mapxsize - 3);
+      printf("\033[33m"); 
       for (int i = 0; i < n; i++)
         printf("*");
-      printf("\033[0m"); // reset couleur
+      printf("\033[0m"); 
 
-      printf("En Route(%d)\n",nb_action);
+      printf("\033[35m%d\033[0m\n",nb_action);
+      printf("\n");
       return 0; 
     }
     sh_map[y_debut][x_debut] = SNAKE_HEAD;
