@@ -77,10 +77,6 @@ action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_d
   return -1; //on renvoie -1, aucun chemin n'existe
 }
 
-
-
-
-
 typedef struct { int x, y; } Point;
 
 void flood_fill(char **map, int mapxsize, int mapysize, int sx, int sy, bool *visited, int *size, bool *has_tail) {
@@ -98,7 +94,6 @@ void flood_fill(char **map, int mapxsize, int mapysize, int sx, int sy, bool *vi
         Point p = stack[--top];
         (*size)++;
 
-        // détecte si la région contient la queue
         if(map[p.y][p.x] == SNAKE_TAIL) *has_tail = true;
 
         for(int d=0; d<4; d++) {
@@ -106,33 +101,34 @@ void flood_fill(char **map, int mapxsize, int mapysize, int sx, int sy, bool *vi
             int ny = p.y + dy[d];
             if(nx < 0 || nx >= mapxsize || ny < 0 || ny >= mapysize) continue;
             if(visited[ny*mapxsize + nx]) continue;
-            if(map[ny][nx] != PATH) continue; // uniquement PATH
+            if(map[ny][nx] != PATH) continue;
             stack[top++] = (Point){nx, ny};
             visited[ny*mapxsize + nx] = true;
         }
     }
 }
-bool creates_bad_region(char **map, int mapxsize, int mapysize) {
-    bool visited[mapysize * mapxsize];
-    for(int i=0;i<mapxsize*mapysize;i++) visited[i]=false;
 
-    for(int y=0; y<mapysize; y++) {
-        for(int x=0; x<mapxsize; x++) {
-            if(!visited[y*mapxsize + x] && map[y][x] == PATH) {
+// Correction : soft-lock check qui prend en compte la taille du snake
+bool creates_bad_region(char **map, int mapxsize, int mapysize, int snake_size) {
+    bool visited[mapysize * mapxsize];
+    for(int i=0; i<mapxsize*mapysize; i++) visited[i]=false;
+
+    for(int y=0; y<mapysize; y++){
+        for(int x=0; x<mapxsize; x++){
+            if(!visited[y*mapxsize + x] && map[y][x] == PATH){
                 int region_size = 0;
                 bool has_tail = false;
                 flood_fill(map, mapxsize, mapysize, x, y, visited, &region_size, &has_tail);
 
-                // Si la région ne contient pas la queue et est impaire et taille > 1 → dangereux
-                if(!has_tail && region_size > 1 && (region_size % 2 == 1)) {
+                // On ignore les petites régions <= snake_size
+                if(!has_tail && region_size > snake_size && (region_size % 2 == 1)){
                     return true; // soft-lock possible
                 }
             }
         }
     }
-    return false; // tout est safe
+    return false;
 }
-
 
 int abs(int a){
   return a - 2*a*(a<0);
@@ -187,12 +183,12 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
   bool flag = true;
 
   while(flag){
-    if(sh_map[y_debut][x_debut] == BONUS){ //GOALLLLLLAsOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+    if(sh_map[y_debut][x_debut] == BONUS){
       sh_map[y_debut][x_debut] = SNAKE_HEAD;
       while (sh_snake != NULL) {   //free shadow_snake
-      snake_list tmp = sh_snake;
-      sh_snake = sh_snake->next;
-      free(tmp);
+        snake_list tmp = sh_snake;
+        sh_snake = sh_snake->next;
+        free(tmp);
       }
       if (sshc->next == NULL){        
         for(int y = 0; y < mapysize; y++)
@@ -205,13 +201,13 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         for (int x = 0; x < mapxsize; x++)
           if (map[y][x] !=WALL)
             mapsize ++;
-      int snake_size = 1; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
+      int snake_size = 1;
       while(sshc->next != NULL){
         snake_size ++;
         sshc = sshc->next;
       }
       if ((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) && (snake_size < mapsize)){ 
-        while (*sh != NULL){ //clear de la shadow list car chemin guezz
+        while (*sh != NULL){
           shadow_list tmp = (*sh);
           (*sh) = (*sh)->next;
           free(tmp);
@@ -221,16 +217,16 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         free(sh_map);
         return -1;
       }
-      if (creates_bad_region(sh_map, mapxsize, mapysize)) {
-        while (*sh != NULL){ //clear de la shadow list car map qui PUE SA GRAND MERE 
+      if (creates_bad_region(sh_map, mapxsize, mapysize, snake_size)) {
+        while (*sh != NULL){
           shadow_list tmp = (*sh);
           *sh = (*sh)->next;
           free(tmp);
         }
-      for(int y=0;y<mapysize;y++) 
-        free(sh_map[y]);
-      free(sh_map);
-      return -1;
+        for(int y=0;y<mapysize;y++) 
+          free(sh_map[y]);
+        free(sh_map);
+        return -1;
       }
       for(int y = 0; y < mapysize; y++)
         free(sh_map[y]);
@@ -261,11 +257,10 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
     }
     int min = -1;
     int shadow_id = -1;
-    for (int i = 0; i < 4; i++) { //exploration des voisins
+    for (int i = 0; i < 4; i++) {
       int nx = x_debut + dx[rd[i]];
       int ny = y_debut + dy[rd[i]];
-      if (sh_map[ny][nx] != WALL && sh_map[ny][nx] != SNAKE_BODY && sh_map[ny][nx] != SNAKE_HEAD) { //si voisin safe
-        // va falloir conserver le meilleur i voila
+      if (sh_map[ny][nx] != WALL && sh_map[ny][nx] != SNAKE_BODY && sh_map[ny][nx] != SNAKE_HEAD) {
         if(NY(nx,ny,x_apple,y_apple) < min || min == -1){
             min = NY(nx,ny,x_apple,y_apple);
             shadow_id = i;
@@ -273,9 +268,9 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       } 
     }
     if(shadow_id != -1){
-      x_debut = x_debut + dx[rd[shadow_id]]; //update de la position dans le a*
+      x_debut = x_debut + dx[rd[shadow_id]];
       y_debut = y_debut + dy[rd[shadow_id]];
-      shadow_list new = malloc(sizeof(*new)); //ajout du move a shadow_move
+      shadow_list new = malloc(sizeof(*new));
       new->move = dirs[rd[shadow_id]];
       new->next = NULL;
       if (*sh == NULL){
@@ -287,7 +282,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         last_move = last_move->next;
       }
 
-      snake_list new_head = malloc(sizeof(*new_head));//update shadow snake et se souvenir de l'ancienne position de la queue ie tempo
+      snake_list new_head = malloc(sizeof(*new_head));
       new_head->c = SNAKE_HEAD;
       new_head->x = x_debut;
       new_head->y = y_debut;
@@ -304,7 +299,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         sh_snake_new_fin->c = SNAKE_TAIL;
       sh_snake_fin = sh_snake_new_fin;
       sh_snake_fin->next = NULL;
-      //update de la map mmt trivial
+
       if(sh_map[sh_snake->y][sh_snake->x] != BONUS)
         sh_map[tempo->y][tempo->x] = PATH;
       free(tempo);
@@ -316,15 +311,15 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
     }
     else flag = false;
   }
-  while (sh_snake != NULL) {   //free shadow_snake
-  snake_list tmp = sh_snake;
-  sh_snake = sh_snake->next;
-  free(tmp);
+  while (sh_snake != NULL) {
+    snake_list tmp = sh_snake;
+    sh_snake = sh_snake->next;
+    free(tmp);
   }
   for(int y = 0; y < mapysize; y++)
     free(sh_map[y]);
   free(sh_map);
-  while (*sh != NULL){ //clear de la shadow list car chemin guezz
+  while (*sh != NULL){
     shadow_list tmp = (*sh);
     (*sh) = (*sh)->next;
     free(tmp);
@@ -350,19 +345,17 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
   free(tmp);
   return a;
 }
-/*
-  snake fonction de base
-*/
+
 action snake(
-	     char * * map, // array of chars modeling the game map
-	     int mapxsize, // x size of the map
-	     int mapysize, // y size of the map
-	     snake_list s, // snake coded as a linked list
-	     action last_action // last action made, set to -1 in the beginning
+	     char * * map,
+	     int mapxsize,
+	     int mapysize,
+	     snake_list s,
+	     action last_action
 	     ) {
   static shadow_list shadow_move = NULL;
   if(last_action == - 1){
-    srand(time(NULL)); //on initialise la seed de l'execution
+    srand(time(NULL));
     shadow_move = NULL;
   }
   return shadow_victoire(map,mapxsize,mapysize,s,last_action,&shadow_move);
