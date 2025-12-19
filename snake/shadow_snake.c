@@ -13,7 +13,45 @@ char * student="Chaigne"; //c'est moi
 
 #define ALEA 1 // entier de 1 a inf, augmete avec la golemie du snake
 
+action aleatoire(char * * map, int mapxsize, int mapysize, snake_list s, action last_action ){
+  bool ok=false;  // ok will be set to true as soon as a randomly selected action is valid
+  action a;
+  do {
+    a=rand()%4; // ramdomly select one of the 4 possible actions: 0=NORTH, 1=EAST, 2=SOUTH, 3=WEST
 
+    switch(a) { // check whether the randomly selected action is valid, i.e., if its preconditions are satisfied
+    case NORTH: // going toward this direction does not put snake's head into
+      if(map[s->y-1][s->x]!=WALL // a wall
+	      && map[s->y-1][s->x]!=SNAKE_BODY // snake's body
+	      && map[s->y-1][s->x]!=SNAKE_TAIL) // snake's tail
+	      ok=true; // this direction is safe, hence valid!
+      break;
+    case EAST: // going toward this direction does not put snake's head into
+      if(map[s->y][s->x+1]!=WALL // a wall
+	      && map[s->y][s->x+1]!=SNAKE_BODY // snake's body
+	      && map[s->y][s->x+1]!=SNAKE_TAIL) // snake's tail
+	      ok=true; // this direction is safe, hence valid!
+      break;
+    case SOUTH: // going toward this direction does not put snake's head into
+      if(map[s->y+1][s->x]!=WALL // a wall
+	      && map[s->y+1][s->x]!=SNAKE_BODY // snake's body
+	      && map[s->y+1][s->x]!=SNAKE_TAIL) // snake's tail
+	    ok=true; // this direction is safe, hence valid!
+      break;
+    case WEST: // going toward this direction does not put snake's head into
+      if(map[s->y][s->x-1]!=WALL // a wall
+	      && map[s->y][s->x-1]!=SNAKE_BODY // snake's body
+	      && map[s->y][s->x-1]!=SNAKE_TAIL) // snake's tail
+	      ok=true; // this direction is safe, hence valid!
+      break;
+    }
+  } while(!ok && (map[s->y-1][s->x]==PATH || map[s->y-1][s->x]==BONUS
+		  || map[s->y][s->x+1]==PATH || map[s->y][s->x+1]==BONUS
+		  || map[s->y+1][s->x]==PATH || map[s->y+1][s->x]==BONUS
+		  || map[s->y][s->x-1]==PATH || map[s->y][s->x-1]==BONUS));
+
+  return a;
+}
 struct liste_BFS { //liste chainee pour explorer la map avec un parcours en largeur
     int x; //coordonne en x de la case
     int y; //coordonne en y de la case
