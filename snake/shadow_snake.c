@@ -195,9 +195,11 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       int ny = y_debut + dy[rd[i]];
       if (sh_map[ny][nx] != WALL && sh_map[ny][nx] != SNAKE_BODY && sh_map[ny][nx] != SNAKE_HEAD) { //si voisin safe
         // va falloir conserver le meilleur i voila
-        if(NY(nx,ny,x_apple,y_apple) < min || min == -1)
-          min = NY(nx,ny,x_apple,y_apple);
-        shadow_id = i; //chutttttttttttttttttttttttttttttttttttttttttttttt faut pas le dire
+        if(NY(nx,ny,x_apple,y_apple) < min || min == -1){
+          if(rand()%2 == 1) //vous vous en doutez on fait des choses etranges ici
+            min = NY(nx,ny,x_apple,y_apple);
+          shadow_id = i;
+        }
       } 
     }
     if(shadow_id != -1){
@@ -258,15 +260,9 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
     free(tmp);
   }
   return -1;
-
-
-  // faire un a* en avec update du corps de la shadow map grace au shadow snake
-  // condition d'arret pomme trouver ou les 4 direction nous nique 
 }
 
-
 action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action last_action,shadow_list *sh) {
-
   while (*sh != NULL){
     action a = (*sh)->move;
     shadow_list tmp = (*sh);
@@ -301,5 +297,3 @@ action snake(
   }
   return shadow_victoire(map,mapxsize,mapysize,s,last_action,&shadow_move);
 }
-
-
