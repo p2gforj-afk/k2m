@@ -153,10 +153,9 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
           if (map[y][x] !=WALL)
             mapsize ++;
       int snake_size = 1; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
-      snake_list size = ssh;
-      while(size->next != NULL){
-        snake_size++;
-        size = size->next;
+      while(sshc->next != NULL){
+        snake_size ++;
+        sshc = sshc->next;
       }
       printf("mapsize : %d, size_snake : %d\n",mapsize, snake_size);
       if ((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) && (snake_size < mapsize)){ 
