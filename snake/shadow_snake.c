@@ -148,7 +148,11 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         return 0;
       }
       int snake_size = 1; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
-      int mapsize = ((mapxsize-2)*(mapysize-2)-1);
+      int mapsize = 0;
+      for (int y = 0; y < mapysize; y++)
+        for (int x = 0; x < mapxsize; x++)
+          if (map[y][x] !=WALL)
+            mapsize ++;
       snake_list size = ssh;
       while(size->next != NULL){
         snake_size ++;
