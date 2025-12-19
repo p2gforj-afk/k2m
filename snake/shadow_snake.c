@@ -155,7 +155,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       int snake_size = 1; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
       snake_list size = ssh;
       while(size->next != NULL){
-        snake_size ++;
+        snake_size++;
         size = size->next;
       }
       printf("mapsize : %d, size_snake : %d\n",mapsize, snake_size);
