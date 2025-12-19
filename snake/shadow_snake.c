@@ -171,6 +171,13 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       for(int y = 0; y < mapysize; y++)
         free(sh_map[y]);
       free(sh_map);
+      int nb_action = 0;
+      shadow_list action = *sh;
+      while(action->next != NULL){
+        nb_action++;
+        action = action->next;
+      }
+      printf("En Route(%d)\n",nb_action);
       return 0; 
     }
     sh_map[y_debut][x_debut] = SNAKE_HEAD;
