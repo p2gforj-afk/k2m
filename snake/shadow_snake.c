@@ -215,7 +215,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         nb_action++;
         action = action->next;
       }    
-      int n = 1 + rand()%(mapxsize - 3);
+      int n = 10 + rand()%(mapxsize - 3);
       printf("\033[33m"); 
       for (int i = 0; i < n; i++)
         printf("*");
