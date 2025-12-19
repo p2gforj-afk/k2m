@@ -1,252 +1,362 @@
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
+// compiler's header files
+#include <stdbool.h> // bool, true, false
+#include <stdlib.h> // rand, srand
+#include <stdio.h> // printf
+#include <time.h> // time
 
+// main program's header file
 #include "snake_def.h"
 #include "snake_dec.h"
 
-char * student="Chaigne";
+// student name goes here
+char * student="Chaigne"; //c'est moi
 
-// ================= Parcours largeur (BFS) =================
-struct liste_BFS {
-    int x, y;
-    action first_move;
-    struct liste_BFS *next;
+struct liste_BFS { //liste chainee pour explorer la map avec un parcours en largeur
+    int x; //coordonne en x de la case
+    int y; //coordonne en y de la case
+    action first_move; //report du premier move qui a conduit a cette case
+    struct liste_BFS *next; //case suivante a explorer
 };
 typedef struct liste_BFS * bfs;
-
 action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,char GOAL) {
-    char ma_map[mapysize][mapxsize];
-    for(int y=0;y<mapysize;y++)
-        for(int x=0;x<mapxsize;x++)
-            ma_map[y][x]=map[y][x];
+  char ma_map[mapysize][mapxsize]; // Copie de la map - permet de repertorier les visites
+    for (int y = 0; y < mapysize; y++)
+      for (int x = 0; x < mapxsize; x++)
+        ma_map[y][x] = map[y][x];
+  bfs debut = malloc(sizeof(*debut)); //premier maillon, permettra de free plus tard
+  bfs fin = debut; //premet d'ajouter les nouveaux maillons a la fin
+  debut->x = x_debut; //initialisation a la position x_debut
+  debut->y = y_debut; //initialisation a la position y_debut
+  debut->first_move = -1; //pas encore de first_move
+  debut->next = NULL;
+  ma_map[y_debut][x_debut] = WALL; // visite par default de la position initiale
+  int dx[4] = { 0,  0,  1, -1}; //intialisation d'un vecteur pour chacune des direction, permet un truc cool juste apres
+  int dy[4] = {-1,  1,  0,  0};
+  action dirs[4] = {NORTH, SOUTH, EAST, WEST};
+  bfs courant = debut; //designe le maillon dont on va explorer les voisins
+  while (courant != NULL) { //il existe encore des cases a visiter
+    if (map[courant->y][courant->x] == GOAL){ //GOALLLLLLLLLLLLLLLLLLLLLLLLLL
+      action res = courant->first_move; //on note la direction initiale ayant menee a cette trouvaille
+      while (debut != NULL) { //on free la liste
+      bfs tmp = debut;
+      debut = debut->next;
+      free(tmp);
+      }
+      return res; //on renvoie la direction
+    }
+    int rd[4] = {-1,-1,-1,-1}; //ordre d'exploration des voisins qu'on rend aleatoire juste ici (truc cool)
+    for(int k = 0; k<4; k++){ 
+      int j = rand()%4;
+      while (rd[0] == j || rd[1] == j ||rd[2] == j || rd[3] == j)
+        j = rand()%4;
+      rd[k] = j; //prend une valeur aleatoire entre 0 et 3, pas encore associee a un rd[k] precedent
+    }
+    for (int i = 0; i < 4; i++) { //exploration des voisins
+      int nx = courant->x + dx[rd[i]];
+      int ny = courant->y + dy[rd[i]];
+      if (ma_map[ny][nx] != WALL && ma_map[ny][nx] != SNAKE_BODY && ma_map[ny][nx] != SNAKE_HEAD) { //si voisin safe
+        bfs new = malloc(sizeof(*new)); //nouveau maillon pour ajouter la case a notre liste
+        new->x = nx; //coordonnees de la nouvelle case
+        new->y = ny;
+        new->first_move = (courant->first_move == -1) //test pour soit reporter first_move, soit l'initialiser
+                        ? dirs[rd[i]]
+                        : courant->first_move;
+        new->next = NULL;
+        fin->next = new; //ajout du nouveau maillon a la fin de notre liste
+        fin = new; //on remet la fin a la nouvelle fin
+        ma_map[ny][nx] = WALL; //on marque la case comme visitee en y mettant un mur
+      }
+    }
+    courant = courant->next; //on se place au prochain maillon pour continuer notre exploration
+  }
+  while (debut != NULL) { //il n'existe plus de case a visite, on free
+    bfs tmp = debut;
+    debut = debut->next;
+    free(tmp);
+  }
+  return -1; //on renvoie -1, aucun chemin n'existe
+}
 
-    bfs debut=malloc(sizeof(*debut));
-    bfs fin=debut;
-    debut->x=x_debut; debut->y=y_debut; debut->first_move=-1; debut->next=NULL;
-    ma_map[y_debut][x_debut]=WALL;
 
-    int dx[4]={0,0,1,-1}, dy[4]={-1,1,0,0};
-    action dirs[4]={NORTH,SOUTH,EAST,WEST};
-    bfs courant=debut;
-
-    while(courant!=NULL){
-        if(map[courant->y][courant->x]==GOAL){
-            action res=courant->first_move;
-            while(debut!=NULL){ bfs tmp=debut; debut=debut->next; free(tmp);}
-            return res;
-        }
-
-        int rd[4]={-1,-1,-1,-1};
-        for(int k=0;k<4;k++){
-            int j=rand()%4;
-            while(rd[0]==j||rd[1]==j||rd[2]==j||rd[3]==j) j=rand()%4;
-            rd[k]=j;
-        }
-
-        for(int i=0;i<4;i++){
-            int nx=courant->x+dx[rd[i]];
-            int ny=courant->y+dy[rd[i]];
-            if(ma_map[ny][nx]!=WALL && ma_map[ny][nx]!=SNAKE_BODY && ma_map[ny][nx]!=SNAKE_HEAD){
-                bfs new=malloc(sizeof(*new));
-                new->x=nx; new->y=ny;
-                new->first_move=(courant->first_move==-1)?dirs[rd[i]]:courant->first_move;
-                new->next=NULL;
-                fin->next=new; fin=new;
-                ma_map[ny][nx]=WALL;
+// Compte le nombre de cases accessibles depuis (x, y) avec un flood fill simple
+int count_accessible(char **map, int mapxsize, int mapysize, int x, int y) {
+    char temp_map[mapysize][mapxsize];
+    for (int i = 0; i < mapysize; i++)
+        for (int j = 0; j < mapxsize; j++)
+            temp_map[i][j] = map[i][j];
+    
+    int count = 0;
+    // Simple DFS/stack pour flood fill
+    int stack_x[mapxsize * mapysize];
+    int stack_y[mapxsize * mapysize];
+    int top = 0;
+    
+    stack_x[top] = x;
+    stack_y[top] = y;
+    top++;
+    temp_map[y][x] = WALL;
+    
+    int dx[4] = {0, 0, 1, -1};
+    int dy[4] = {-1, 1, 0, 0};
+    
+    while (top > 0) {
+        top--;
+        int cx = stack_x[top];
+        int cy = stack_y[top];
+        count++;
+        
+        for (int i = 0; i < 4; i++) {
+            int nx = cx + dx[i];
+            int ny = cy + dy[i];
+            if (temp_map[ny][nx] != WALL && 
+                temp_map[ny][nx] != SNAKE_BODY && 
+                temp_map[ny][nx] != SNAKE_HEAD) {
+                temp_map[ny][nx] = WALL;
+                stack_x[top] = nx;
+                stack_y[top] = ny;
+                top++;
             }
         }
-        courant=courant->next;
     }
-
-    while(debut!=NULL){ bfs tmp=debut; debut=debut->next; free(tmp);}
-    return -1;
+    return count;
 }
 
-// ================= Flood fill =================
-typedef struct { int x,y; } Point;
-
-void flood_fill(char **map,int mapxsize,int mapysize,int sx,int sy,bool *visited,int *size,bool *has_tail){
-    Point stack[mapxsize*mapysize];
-    int top=0;
-    stack[top++] = (Point){sx,sy};
-    visited[sy*mapxsize+sx]=true;
-    *size=0; *has_tail=false;
-
-    int dx[4]={0,0,1,-1}, dy[4]={-1,1,0,0};
-
-    while(top>0){
-        Point p=stack[--top];
-        (*size)++;
-        if(map[p.y][p.x]==SNAKE_TAIL) *has_tail=true;
-
-        for(int d=0;d<4;d++){
-            int nx=p.x+dx[d], ny=p.y+dy[d];
-            if(nx<0||nx>=mapxsize||ny<0||ny>=mapysize) continue;
-            if(visited[ny*mapxsize+nx]) continue;
-            if(map[ny][nx]!=PATH) continue;
-            stack[top++] = (Point){nx,ny};
-            visited[ny*mapxsize+nx]=true;
-        }
-    }
+int NY(int Xa, int Ya, int Xs, int Ys){
+  return abs(Xs - Xa) + abs(Ys - Ya);
 }
 
-bool creates_bad_region(char **map,int mapxsize,int mapysize){
-    bool visited[mapxsize*mapysize];
-    for(int i=0;i<mapxsize*mapysize;i++) visited[i]=false;
-
-    for(int y=0;y<mapysize;y++){
-        for(int x=0;x<mapxsize;x++){
-            if(!visited[y*mapxsize+x] && map[y][x]==PATH){
-                int region_size=0;
-                bool has_tail=false;
-                flood_fill(map,mapxsize,mapysize,x,y,visited,&region_size,&has_tail);
-                if(!has_tail && region_size>2 && (region_size%2==1)) return true;
-            }
-        }
-    }
-    return false;
-}
-
-// ================= Utilitaires =================
-int abs(int a){ return a-2*a*(a<0); }
-int NY(int Xa,int Ya,int Xs,int Ys){ return abs(Xs-Xa)+abs(Ys-Ya); }
-
-struct SHADOW{ action move; struct SHADOW *next; };
-typedef struct SHADOW *shadow_list;
-
-// ================= Shadow simulation =================
-snake_list copy_snake(snake_list s){
-    if(!s) return NULL;
-    snake_list head=malloc(sizeof(*head));
-    head->c=s->c; head->x=s->x; head->y=s->y;
-    snake_list cur=head, src=s->next;
-    while(src){
-        cur->next=malloc(sizeof(*cur));
-        cur=cur->next;
-        cur->c=src->c; cur->x=src->x; cur->y=src->y;
-        src=src->next;
-    }
-    cur->next=NULL;
-    return head;
-}
-
-void free_snake(snake_list s){
-    while(s){
-        snake_list tmp=s;
-        s=s->next;
-        free(tmp);
-    }
-}
+struct SHADOW{
+  action move;
+  struct SHADOW *next;
+};
+typedef struct SHADOW *shadow_list; 
 
 int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,snake_list ssh,shadow_list *sh){
-    shadow_list last_move=*sh;
-    snake_list sshc=ssh;
-
-    int x_apple=1, y_apple=1;
-    while(map[y_apple][x_apple]!=BONUS){
-        y_apple++; if(y_apple>=mapysize){ y_apple=0; x_apple++; }
+  shadow_list last_move = *sh;
+  snake_list sshc = ssh;
+  int y_apple = 1; // position de la pomme
+  int x_apple = 1;
+  while(map[y_apple][x_apple] != BONUS){
+    y_apple++;
+    if (y_apple == mapysize){
+      y_apple = 1;
+      x_apple++;
     }
-
-    // copie map
-    char **sh_map=malloc(sizeof(char*)*mapysize);
-    for(int y=0;y<mapysize;y++){
-        sh_map[y]=malloc(sizeof(char)*mapxsize);
-        for(int x=0;x<mapxsize;x++) sh_map[y][x]=map[y][x];
+  }
+  char **sh_map = malloc(sizeof(char*) * mapysize); // shadow_map 
+    for (int y = 0; y < mapysize; y++){
+      sh_map[y] = malloc(sizeof(char) * mapxsize);
+      for (int x = 0; x < mapxsize; x++)
+        sh_map[y][x] = map[y][x];
     }
+  snake_list sh_snake = malloc(sizeof(*sh_snake)); //shadow_snake
+  sh_snake->c = ssh->c;
+  sh_snake->x = ssh->x;
+  sh_snake->y = ssh->y;
+  snake_list sh_snake_fin = sh_snake;
+  while(ssh->next != NULL){
+    snake_list new = malloc(sizeof(*new));
+    new->c = ssh->next->c;
+    new->x = ssh->next->x;
+    new->y = ssh->next->y;
+    sh_snake_fin->next = new;
+    sh_snake_fin = sh_snake_fin->next;
+    ssh = ssh->next;
+  }
+  sh_snake_fin->next = NULL;
 
-    // copie snake
-    snake_list sh_snake=copy_snake(ssh);
-    snake_list sh_snake_fin=sh_snake;
-    while(sh_snake_fin->next) sh_snake_fin=sh_snake_fin->next;
+  int dx[4] = { 0,  0,  1, -1};
+  int dy[4] = {-1,  1,  0,  0};
+  action dirs[4] = {NORTH, SOUTH, EAST, WEST};
+  bool flag = true;
 
-    int dx[4]={0,0,1,-1}, dy[4]={-1,1,0,0};
-    action dirs[4]={NORTH,SOUTH,EAST,WEST};
-    bool flag=true;
-
-    while(flag){
-        if(sh_map[y_debut][x_debut]==BONUS){
-            // Vérifier sécurité avant de manger
-            sh_map[y_debut][x_debut]=PATH; // ne pas poser tête encore
-            bool bad_region=creates_bad_region(sh_map,mapxsize,mapysize);
-            int bfs_tail=parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL);
-
-            if(bad_region || bfs_tail==-1){
-                // impossible de manger
-                for(int y=0;y<mapysize;y++) free(sh_map[y]); free(sh_map);
-                free_snake(sh_snake);
-                while(*sh){ shadow_list tmp=*sh; *sh=(*sh)->next; free(tmp);}
-                return -1;
-            }
-
-            // ok, sécurité validée
-            sh_map[y_debut][x_debut]=SNAKE_HEAD;
-            for(int y=0;y<mapysize;y++) free(sh_map[y]); free(sh_map);
-            free_snake(sh_snake);
-            return 0;
+  while(flag){
+    if(sh_map[y_debut][x_debut] == BONUS){ //GOALLLLLLAsOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+      sh_map[y_debut][x_debut] = SNAKE_HEAD;
+      while (sh_snake != NULL) {   //free shadow_snake
+      snake_list tmp = sh_snake;
+      sh_snake = sh_snake->next;
+      free(tmp);
+      }
+      if (sshc->next == NULL){        
+        for(int y = 0; y < mapysize; y++)
+          free(sh_map[y]);
+        free(sh_map);
+        return 0;
+      }
+      int mapsize = -1;
+      for (int y = 0; y < mapysize; y++)
+        for (int x = 0; x < mapxsize; x++)
+          if (map[y][x] !=WALL)
+            mapsize ++;
+      int snake_size = 1; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
+      while(sshc->next != NULL){
+        snake_size ++;
+        sshc = sshc->next;
+      }
+      if ((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) && (snake_size < mapsize)){ 
+        while (*sh != NULL){ //clear de la shadow list car chemin guezz
+          shadow_list tmp = (*sh);
+          (*sh) = (*sh)->next;
+          free(tmp);
         }
+        for(int y = 0; y < mapysize; y++)
+          free(sh_map[y]);
+        free(sh_map);
+        return -1;
+      }
+      for(int y = 0; y < mapysize; y++)
+        free(sh_map[y]);
+      free(sh_map);
+      int nb_action = 0;
+      shadow_list action = *sh;
+      while(action->next != NULL){
+        nb_action++;
+        action = action->next;
+      }    
+      int n = 10 + rand()%(mapxsize - 13);
+      printf("\033[33m"); 
+      for (int i = 0; i < n; i++)
+        printf("*");
+      printf("\033[0m"); 
 
-        int rd[4]={-1,-1,-1,-1};
-        for(int k=0;k<4;k++){
-            int j=rand()%4;
-            while(rd[0]==j||rd[1]==j||rd[2]==j||rd[3]==j) j=rand()%4;
-            rd[k]=j;
-        }
+      printf("\033[95m%d\033[0m\n",nb_action);
 
-        int min=-1, shadow_id=-1;
-        for(int i=0;i<4;i++){
-            int nx=x_debut+dx[rd[i]], ny=y_debut+dy[rd[i]];
-            if(sh_map[ny][nx]!=WALL && sh_map[ny][nx]!=SNAKE_BODY && sh_map[ny][nx]!=SNAKE_HEAD){
-                if(NY(nx,ny,x_apple,y_apple)<min||min==-1){ min=NY(nx,ny,x_apple,y_apple); shadow_id=i; }
-            }
-        }
-
-        if(shadow_id!=-1){
-            x_debut+=dx[rd[shadow_id]]; y_debut+=dy[rd[shadow_id]];
-            shadow_list new=malloc(sizeof(*new));
-            new->move=dirs[rd[shadow_id]]; new->next=NULL;
-            if(!*sh){ *sh=new; last_move=new; }
-            else{ last_move->next=new; last_move=new; }
-
-            // avancer snake shadow
-            snake_list new_head=malloc(sizeof(*new_head));
-            new_head->c=SNAKE_HEAD; new_head->x=x_debut; new_head->y=y_debut; new_head->next=sh_snake;
-            sh_snake=new_head;
-
-            // déplacer queue
-            snake_list cur=sh_snake;
-            while(cur->next!=sh_snake_fin) cur=cur->next;
-            cur->c=SNAKE_TAIL;
-            sh_snake_fin=cur;
-            sh_snake_fin->next=NULL;
-        } else flag=false;
+      return 0; 
     }
+    sh_map[y_debut][x_debut] = SNAKE_HEAD;
+    int rd[4] = {-1,-1,-1,-1};
+    for(int k = 0; k<4; k++){ 
+      int j = rand()%4;
+      while (rd[0] == j || rd[1] == j ||rd[2] == j || rd[3] == j)
+        j = rand()%4;
+      rd[k] = j; 
+    }
+    int min = -1;
+    int shadow_id = -1;
+    for (int i = 0; i < 4; i++) { //exploration des voisins
+      int nx = x_debut + dx[rd[i]];
+      int ny = y_debut + dy[rd[i]];
+      if (sh_map[ny][nx] != WALL && sh_map[ny][nx] != SNAKE_BODY && sh_map[ny][nx] != SNAKE_HEAD) { //si voisin safe
+        // va falloir conserver le meilleur i voila
+        if(NY(nx,ny,x_apple,y_apple) < min || min == -1){
+            min = NY(nx,ny,x_apple,y_apple);
+            shadow_id = i;
+        }
+      } 
+    }
+    if(shadow_id != -1){
+      int next_x = x_debut + dx[rd[shadow_id]]; 
+      int next_y = y_debut + dy[rd[shadow_id]];
+      
+      // Vérification topologique
+      int accessible_before = count_accessible(sh_map, mapxsize, mapysize, x_debut, y_debut);
+      
+      // Simule le move
+      char saved = sh_map[next_y][next_x];
+      sh_map[next_y][next_x] = SNAKE_HEAD;
+      int accessible_after = count_accessible(sh_map, mapxsize, mapysize, next_x, next_y);
+      sh_map[next_y][next_x] = saved;
+      
+      // Si on perd plus d'une case d'accessibilité, on crée un trou
+      if (accessible_before - accessible_after > 1) {
+        // Ce move crée une poche, on l'invalide
+        shadow_id = -1;
+        flag = false;
+      }
+    }
+    else if(shadow_id != -1) {
+      x_debut = x_debut + dx[rd[shadow_id]]; 
+      y_debut = y_debut + dy[rd[shadow_id]];
+      shadow_list new = malloc(sizeof(*new)); //ajout du move a shadow_move
+      new->move = dirs[rd[shadow_id]];
+      new->next = NULL;
+      if (*sh == NULL){
+        *sh = new;
+        last_move = new;
+      }
+      else {
+        last_move->next = new;
+        last_move = last_move->next;
+      }
 
-    for(int y=0;y<mapysize;y++) free(sh_map[y]); free(sh_map);
-    free_snake(sh_snake);
-    while(*sh){ shadow_list tmp=*sh; *sh=(*sh)->next; free(tmp);}
-    return -1;
+      snake_list new_head = malloc(sizeof(*new_head));//update shadow snake et se souvenir de l'ancienne position de la queue ie tempo
+      new_head->c = SNAKE_HEAD;
+      new_head->x = x_debut;
+      new_head->y = y_debut;
+      new_head->next = sh_snake;
+      sh_snake = new_head;
+
+      snake_list sh_snake_new_fin = sh_snake;
+      while(sh_snake_new_fin->next != sh_snake_fin){
+        sh_snake_new_fin = sh_snake_new_fin->next;
+      }
+      sh_snake_new_fin->c = SNAKE_HEAD;
+      snake_list tempo = sh_snake_fin;
+      if(sh_snake_new_fin != sh_snake)
+        sh_snake_new_fin->c = SNAKE_TAIL;
+      sh_snake_fin = sh_snake_new_fin;
+      sh_snake_fin->next = NULL;
+      //update de la map mmt trivial
+      if(sh_map[sh_snake->y][sh_snake->x] != BONUS)
+        sh_map[tempo->y][tempo->x] = PATH;
+      free(tempo);
+      if (sh_snake->next != NULL){
+        if(sh_map[sh_snake->y][sh_snake->x] != BONUS)
+          sh_map[sh_snake_fin->y][sh_snake_fin->x] = sh_snake_fin->c;
+        sh_map[sh_snake->next->y][sh_snake->next->x] = sh_snake->next->c;
+      }
+    }
+    else flag = false;
+  }
+  while (sh_snake != NULL) {   //free shadow_snake
+  snake_list tmp = sh_snake;
+  sh_snake = sh_snake->next;
+  free(tmp);
+  }
+  for(int y = 0; y < mapysize; y++)
+    free(sh_map[y]);
+  free(sh_map);
+  while (*sh != NULL){ //clear de la shadow list car chemin guezz
+    shadow_list tmp = (*sh);
+    (*sh) = (*sh)->next;
+    free(tmp);
+  }
+  return -1;
 }
 
-// ================= Action finale =================
-action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action last_action,shadow_list *sh){
-    if(*sh){
-        action a=(*sh)->move;
-        shadow_list tmp=*sh; *sh=(*sh)->next; free(tmp);
-        return a;
-    }
-    int x=s->x, y=s->y;
-    if(a_shadow_star(map,mapxsize,mapysize,x,y,s,sh)==-1)
-        return parcours_largeur(map,mapxsize,mapysize,x,y,SNAKE_TAIL);
-    action a=(*sh)->move;
-    shadow_list tmp=*sh; *sh=(*sh)->next; free(tmp);
+action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action last_action,shadow_list *sh) {
+  while (*sh != NULL){
+    action a = (*sh)->move;
+    shadow_list tmp = (*sh);
+    (*sh) = (*sh)->next;
+    free(tmp);
     return a;
+  }
+  int x = s->x;
+  int y = s->y;
+  if (a_shadow_star(map, mapxsize, mapysize,x, y, s,&(*sh)) == -1)
+    return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
+  action a = (*sh)->move;
+  shadow_list tmp = (*sh);
+  (*sh) = (*sh)->next;
+  free(tmp);
+  return a;
 }
-
-// ================= Snake entry =================
-action snake(char **map,int mapxsize,int mapysize,snake_list s,action last_action){
-    static shadow_list shadow_move=NULL;
-    if(last_action==-1){ srand(time(NULL)); shadow_move=NULL;}
-    return shadow_victoire(map,mapxsize,mapysize,s,last_action,&shadow_move);
+/*
+  snake fonction de base
+*/
+action snake(
+	     char * * map, // array of chars modeling the game map
+	     int mapxsize, // x size of the map
+	     int mapysize, // y size of the map
+	     snake_list s, // snake coded as a linked list
+	     action last_action // last action made, set to -1 in the beginning
+	     ) {
+  static shadow_list shadow_move = NULL;
+  if(last_action == - 1){
+    srand(time(NULL)); //on initialise la seed de l'execution
+    shadow_move = NULL;
+  }
+  return shadow_victoire(map,mapxsize,mapysize,s,last_action,&shadow_move);
 }
