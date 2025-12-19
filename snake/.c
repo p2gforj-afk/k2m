@@ -264,47 +264,47 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         shadow_id = -1;
         flag = false;
       }
-    }
-    else if(shadow_id != -1) {
-      x_debut = x_debut + dx[rd[shadow_id]]; 
-      y_debut = y_debut + dy[rd[shadow_id]];
-      shadow_list new = malloc(sizeof(*new)); //ajout du move a shadow_move
-      new->move = dirs[rd[shadow_id]];
-      new->next = NULL;
-      if (*sh == NULL){
-        *sh = new;
-        last_move = new;
-      }
-      else {
-        last_move->next = new;
-        last_move = last_move->next;
-      }
+      else{
+        x_debut = next_x; 
+        y_debut = next_y;
+        shadow_list new = malloc(sizeof(*new)); //ajout du move a shadow_move
+        new->move = dirs[rd[shadow_id]];
+        new->next = NULL;
+        if (*sh == NULL){
+          *sh = new;
+          last_move = new;
+        }
+        else {
+          last_move->next = new;
+          last_move = last_move->next;
+        }
 
-      snake_list new_head = malloc(sizeof(*new_head));//update shadow snake et se souvenir de l'ancienne position de la queue ie tempo
-      new_head->c = SNAKE_HEAD;
-      new_head->x = x_debut;
-      new_head->y = y_debut;
-      new_head->next = sh_snake;
-      sh_snake = new_head;
+        snake_list new_head = malloc(sizeof(*new_head));//update shadow snake et se souvenir de l'ancienne position de la queue ie tempo
+        new_head->c = SNAKE_HEAD;
+        new_head->x = x_debut;
+        new_head->y = y_debut;
+        new_head->next = sh_snake;
+        sh_snake = new_head;
 
-      snake_list sh_snake_new_fin = sh_snake;
-      while(sh_snake_new_fin->next != sh_snake_fin){
-        sh_snake_new_fin = sh_snake_new_fin->next;
-      }
-      sh_snake_new_fin->c = SNAKE_HEAD;
-      snake_list tempo = sh_snake_fin;
-      if(sh_snake_new_fin != sh_snake)
-        sh_snake_new_fin->c = SNAKE_TAIL;
-      sh_snake_fin = sh_snake_new_fin;
-      sh_snake_fin->next = NULL;
-      //update de la map mmt trivial
-      if(sh_map[sh_snake->y][sh_snake->x] != BONUS)
-        sh_map[tempo->y][tempo->x] = PATH;
-      free(tempo);
-      if (sh_snake->next != NULL){
+        snake_list sh_snake_new_fin = sh_snake;
+        while(sh_snake_new_fin->next != sh_snake_fin){
+          sh_snake_new_fin = sh_snake_new_fin->next;
+        }
+        sh_snake_new_fin->c = SNAKE_HEAD;
+        snake_list tempo = sh_snake_fin;
+        if(sh_snake_new_fin != sh_snake)
+          sh_snake_new_fin->c = SNAKE_TAIL;
+        sh_snake_fin = sh_snake_new_fin;
+        sh_snake_fin->next = NULL;
+        //update de la map mmt trivial
         if(sh_map[sh_snake->y][sh_snake->x] != BONUS)
-          sh_map[sh_snake_fin->y][sh_snake_fin->x] = sh_snake_fin->c;
-        sh_map[sh_snake->next->y][sh_snake->next->x] = sh_snake->next->c;
+          sh_map[tempo->y][tempo->x] = PATH;
+        free(tempo);
+        if (sh_snake->next != NULL){
+          if(sh_map[sh_snake->y][sh_snake->x] != BONUS)
+            sh_map[sh_snake_fin->y][sh_snake_fin->x] = sh_snake_fin->c;
+          sh_map[sh_snake->next->y][sh_snake->next->x] = sh_snake->next->c;
+        }
       }
     }
     else flag = false;
