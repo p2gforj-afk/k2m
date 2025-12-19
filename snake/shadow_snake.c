@@ -221,8 +221,8 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         printf("*");
       printf("\033[0m"); 
 
-      printf("\033[35m%d\033[0m\n",nb_action);
-      printf("\n");
+      printf("\033[95m%d\033[0m\n",nb_action);
+
       return 0; 
     }
     sh_map[y_debut][x_debut] = SNAKE_HEAD;
