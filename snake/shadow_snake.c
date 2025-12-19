@@ -81,9 +81,6 @@ action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_d
 }
 
 
-//ya pas de core dump deja et il avance mais ya definivement des murs que ce salaud ne voit pas
-
-
 int abs(int a){
   return a - 2*a*(a<0);
 }
@@ -151,7 +148,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         return 0;
       }
       if ((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1)){ 
-        while (*sh != NULL){
+        while (*sh != NULL){ //clear de la shadow list car chemin guezz
           shadow_list tmp = (*sh);
           (*sh) = (*sh)->next;
           free(tmp);
@@ -240,6 +237,11 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
   for(int y = 0; y < mapysize; y++)
     free(sh_map[y]);
   free(sh_map);
+  while (*sh != NULL){ //clear de la shadow list car chemin guezz
+    shadow_list tmp = (*sh);
+    (*sh) = (*sh)->next;
+    free(tmp);
+  }
   return -1;
 
 
