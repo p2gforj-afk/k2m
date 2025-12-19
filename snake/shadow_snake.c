@@ -221,10 +221,12 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       sh_snake_fin = sh_snake_new_fin;
       sh_snake_fin->next = NULL;
       //update de la map mmt trivial
-      sh_map[tempo->y][tempo->x] = PATH;
+      if(sh_map[sh_snake->y][sh_snake->x] != BONUS)
+        sh_map[tempo->y][tempo->x] = PATH;
       free(tempo);
       if (sh_snake->next != NULL){
-        sh_map[sh_snake_fin->y][sh_snake_fin->x] = sh_snake_fin->c;
+        if(sh_map[sh_snake->y][sh_snake->x] != BONUS)
+          sh_map[sh_snake_fin->y][sh_snake_fin->x] = sh_snake_fin->c;
         sh_map[sh_snake->next->y][sh_snake->next->x] = sh_snake->next->c;
       }
     }
