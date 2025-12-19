@@ -178,11 +178,9 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       int ny = y_debut + dy[rd[i]];
       if (sh_map[ny][nx] != WALL && sh_map[ny][nx] != SNAKE_BODY && sh_map[ny][nx] != SNAKE_HEAD) { //si voisin safe
         // va falloir conserver le meilleur i voila
-        if(NY(nx,ny,x_apple,y_apple) < min || min == -1){
+        if(NY(nx,ny,x_apple,y_apple) < min || min == -1)
           min = NY(nx,ny,x_apple,y_apple);
-          shadow_id = i;
-          
-        }
+        shadow_id = i; //chutttttttttttttttttttttttttttttttttttttttttttttt faut pas le dire
       } 
     }
     if(shadow_id != -1){
