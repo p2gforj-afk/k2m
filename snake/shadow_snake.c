@@ -159,6 +159,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         size = size->next;
       }
       if ((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) && (snake_size < mapsize)){ 
+        printf("mapsize : %d, size_snake : %d",mapsize, snake_size);
         while (*sh != NULL){ //clear de la shadow list car chemin guezz
           shadow_list tmp = (*sh);
           (*sh) = (*sh)->next;
