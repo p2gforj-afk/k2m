@@ -148,7 +148,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         return 0;
       }
       int snake_size = 1; //on calcule la taille de snake - sur certaines maps la fin de partie est impossible donc on va la forcer -
-      int mapsize = 0;
+      int mapsize = -1;
       for (int y = 0; y < mapysize; y++)
         for (int x = 0; x < mapxsize; x++)
           if (map[y][x] !=WALL)
