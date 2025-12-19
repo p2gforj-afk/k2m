@@ -272,8 +272,31 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
   }
   int x = s->x;
   int y = s->y;
-  if (a_shadow_star(map, mapxsize, mapysize,x, y, s,&(*sh)) == -1) 
+  action b = -1;
+  if (a_shadow_star(map, mapxsize, mapysize,x, y, s,&(*sh)) == -1){
+    b = parcours_largeur(map, mapxsize, mapysize,x, y, PATH);
+    if (b != -1) {
+      switch (b){
+      case NORTH:
+        if(parcours_largeur(map, mapxsize, mapysize, x, y-1, SNAKE_TAIL) != -1)
+          return NORTH;
+        break;
+      case SOUTH:
+        if(parcours_largeur(map, mapxsize, mapysize, x, y+1, SNAKE_TAIL) != -1 )
+          return SOUTH;
+        break;
+      case EAST:
+        if(parcours_largeur(map, mapxsize, mapysize, x+1, y, SNAKE_TAIL) != -1)
+          return EAST;
+        break;
+      case WEST:
+        if(parcours_largeur(map, mapxsize, mapysize, x-1, y, SNAKE_TAIL) != -1)
+          return WEST;
+        break;
+      }
+    }
     return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
+  }
   action a = (*sh)->move;
   shadow_list tmp = (*sh);
   (*sh) = (*sh)->next;
