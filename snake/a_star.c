@@ -195,11 +195,11 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         snake_size ++;
         sshc = sshc->next;
       }
-      if ((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) && (snake_size < mapsize) 
-        && (sh_map[y_debut+1][x_debut] == SNAKE_TAIL
-         || sh_map[y_debut-1][x_debut] == SNAKE_TAIL
-         || sh_map[y_debut][x_debut+1] == SNAKE_TAIL
-         || sh_map[y_debut][x_debut-1] == SNAKE_TAIL)){ 
+      if (((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) || (  
+            sh_map[y_debut+1][x_debut] != SNAKE_TAIL
+         && sh_map[y_debut-1][x_debut] != SNAKE_TAIL
+         && sh_map[y_debut][x_debut+1] != SNAKE_TAIL
+         && sh_map[y_debut][x_debut-1] != SNAKE_TAIL)) && (snake_size < mapsize) ){ 
         while (*sh != NULL){ //clear de la shadow list car chemin guezz
           shadow_list tmp = (*sh);
           (*sh) = (*sh)->next;
