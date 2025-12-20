@@ -172,14 +172,14 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
   bool flag = true;
 
   while(flag){
-    if(sh_map[y_debut][x_debut] == BONUS){ //GOALLLLLLLLLLLLLLLLLLLLLLLLLLL
+    if(sh_map[y_debut][x_debut] == BONUS){
       sh_map[y_debut][x_debut] = SNAKE_HEAD;
       while (sh_snake != NULL) {   //free shadow_snake
       snake_list tmp = sh_snake;
       sh_snake = sh_snake->next;
       free(tmp);
       }
-      if (sshc->next == NULL || sshc->next->next == NULL){        
+      if (sshc->next == NULL){        
         for(int y = 0; y < mapysize; y++)
           free(sh_map[y]);
         free(sh_map);
@@ -195,14 +195,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         snake_size ++;
         sshc = sshc->next;
       }
-      if (((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1)
-       /*|| (  
-            sh_map[y_debut+1][x_debut] != SNAKE_TAIL
-         && sh_map[y_debut-1][x_debut] != SNAKE_TAIL
-         && sh_map[y_debut][x_debut+1] != SNAKE_TAIL
-         && sh_map[y_debut][x_debut-1] != SNAKE_TAIL)*/ )
-         
-         && (snake_size < mapsize) ){ 
+      if ((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1) && (snake_size < mapsize)){ 
         while (*sh != NULL){ //clear de la shadow list car chemin guezz
           shadow_list tmp = (*sh);
           (*sh) = (*sh)->next;
