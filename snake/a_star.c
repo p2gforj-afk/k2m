@@ -179,7 +179,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       sh_snake = sh_snake->next;
       free(tmp);
       }
-      if (sshc->next == NULL && sshc->next->next == NULL){        
+      if (sshc->next == NULL || sshc->next->next == NULL){        
         for(int y = 0; y < mapysize; y++)
           free(sh_map[y]);
         free(sh_map);
