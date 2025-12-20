@@ -137,7 +137,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
   snake_list sshc = ssh;
   int y_apple = 1; // position de la pomme
   int x_apple = 1;
-  while(map[y_apple][x_apple] != BONUS){
+  while(map[y_apple][x_apple] != BONUS){ 
     y_apple++;
     if (y_apple == mapysize){
       y_apple = 1;
@@ -172,7 +172,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
   bool flag = true;
 
   while(flag){
-    if(sh_map[y_debut][x_debut] == BONUS){
+    if(sh_map[y_debut][x_debut] == BONUS){ //GOALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
       sh_map[y_debut][x_debut] = SNAKE_HEAD;
       while (sh_snake != NULL) {   //free shadow_snake
       snake_list tmp = sh_snake;
