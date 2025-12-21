@@ -321,8 +321,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
 
 action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action last_action,shadow_list *sh) {
   if(trou_connexe(map, mapxsize, mapysize) == 0){
-    printf("PUE LA MERDE");
-    return(-1);
+    printf("PUE LA MERDE\n");
   }
   while (*sh != NULL){
     action a = (*sh)->move;
