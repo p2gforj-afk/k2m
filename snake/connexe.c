@@ -297,9 +297,9 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
             while (ss->next != NULL){
                 ss = ss->next;
             }
-            tigre[ss->y][ss->x] == WALL;
+            tigre[ss->y][ss->x] = WALL;
         }
-        tigre[ny][nx] == WALL;
+        tigre[ny][nx] = WALL;
         if(trou_connexe(tigre,mapxsize,mapysize) == 1){
             return dirs[i];
         }
