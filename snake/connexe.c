@@ -20,66 +20,6 @@ struct liste_BFS { //liste chainee pour explorer la map avec un parcours en larg
     struct liste_BFS *next; //case suivante a explorer
 };
 typedef struct liste_BFS * bfs;
-action parcours_largeur(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,char GOAL) {
-  char ma_map[mapysize][mapxsize]; // Copie de la map - permet de repertorier les visites
-    for (int y = 0; y < mapysize; y++)
-      for (int x = 0; x < mapxsize; x++)
-        ma_map[y][x] = map[y][x];
-  bfs debut = malloc(sizeof(*debut)); //premier maillon, permettra de free plus tard
-  bfs fin = debut; //premet d'ajouter les nouveaux maillons a la fin
-  debut->x = x_debut; //initialisation a la position x_debut
-  debut->y = y_debut; //initialisation a la position y_debut
-  debut->first_move = -1; //pas encore de first_move
-  debut->next = NULL;
-  ma_map[y_debut][x_debut] = WALL; // visite par default de la position initiale
-  int dx[4] = { 0,  0,  1, -1}; //intialisation d'un vecteur pour chacune des direction, permet un truc cool juste apres
-  int dy[4] = {-1,  1,  0,  0};
-  action dirs[4] = {NORTH, SOUTH, EAST, WEST};
-  bfs courant = debut; //designe le maillon dont on va explorer les voisins
-  while (courant != NULL) { //il existe encore des cases a visiter
-    if (map[courant->y][courant->x] == GOAL){ //GOALLLLLLLLLLLLLLLLLLLLLLLLLL
-      action res = courant->first_move; //on note la direction initiale ayant menee a cette trouvaille
-      while (debut != NULL) { //on free la liste
-      bfs tmp = debut;
-      debut = debut->next;
-      free(tmp);
-      }
-      return res; //on renvoie la direction
-    }
-    int rd[4] = {-1,-1,-1,-1}; //ordre d'exploration des voisins qu'on rend aleatoire juste ici (truc cool)
-    for(int k = 0; k<4; k++){ 
-      int j = rand()%4;
-      while (rd[0] == j || rd[1] == j ||rd[2] == j || rd[3] == j)
-        j = rand()%4;
-      rd[k] = j; //prend une valeur aleatoire entre 0 et 3, pas encore associee a un rd[k] precedent
-    }
-    for (int i = 0; i < 4; i++) { //exploration des voisins
-      int nx = courant->x + dx[rd[i]];
-      int ny = courant->y + dy[rd[i]];
-      if (ma_map[ny][nx] != WALL && ma_map[ny][nx] != SNAKE_BODY && ma_map[ny][nx] != SNAKE_HEAD) { //si voisin safe
-        bfs new = malloc(sizeof(*new)); //nouveau maillon pour ajouter la case a notre liste
-        new->x = nx; //coordonnees de la nouvelle case
-        new->y = ny;
-        new->first_move = (courant->first_move == -1) //test pour soit reporter first_move, soit l'initialiser
-                        ? dirs[rd[i]]
-                        : courant->first_move;
-        new->next = NULL;
-        fin->next = new; //ajout du nouveau maillon a la fin de notre liste
-        fin = new; //on remet la fin a la nouvelle fin
-        ma_map[ny][nx] = WALL; //on marque la case comme visitee en y mettant un mur
-      }
-    }
-    courant = courant->next; //on se place au prochain maillon pour continuer notre exploration
-  }
-  while (debut != NULL) { //il n'existe plus de case a visite, on free
-    bfs tmp = debut;
-    debut = debut->next;
-    free(tmp);
-  }
-  return -1; //on renvoie -1, aucun chemin n'existe
-}
-
-
 int trou_connexe(char **map,int mapxsize, int mapysize){
     char map_c[mapysize][mapxsize]; // Copie de la map - permet de repertorier les visites
     int nb_trou = 0;
@@ -129,7 +69,6 @@ int trou_connexe(char **map,int mapxsize, int mapysize){
     }
     return(nb_trou_c == nb_trou);
 }
-
 
 int abs(int a){
   return a - 2*a*(a<0);
@@ -207,7 +146,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
         snake_size ++;
         sshc = sshc->next;
       }
-      if (((parcours_largeur(sh_map,mapxsize,mapysize,x_debut,y_debut,SNAKE_TAIL) == -1)|| (trou_connexe(sh_map, mapxsize, mapysize) == 0)) && (snake_size < mapsize)){ 
+      if ((trou_connexe(sh_map, mapxsize, mapysize) == 0) && (snake_size < mapsize)){ 
         while (*sh != NULL){ //clear de la shadow list car chemin guezz
           shadow_list tmp = (*sh);
           (*sh) = (*sh)->next;
@@ -332,8 +271,42 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
   }
   int x = s->x;
   int y = s->y;
-  if (a_shadow_star(map, mapxsize, mapysize,x, y, s,&(*sh)) == -1)
-    return parcours_largeur(map, mapxsize, mapysize,x, y, SNAKE_TAIL);
+  if (a_shadow_star(map, mapxsize, mapysize,x, y, s,&(*sh)) == -1){
+    int dx[4] = { 0,  0,  1, -1};
+    int dy[4] = {-1,  1,  0,  0};
+    action dirs[4] = {NORTH, SOUTH, EAST, WEST};
+    int rd[4] = {-1,-1,-1,-1};
+    for(int k = 0; k<4; k++){ 
+      int j = rand()%4;
+      while (rd[0] == j || rd[1] == j ||rd[2] == j || rd[3] == j)
+        j = rand()%4;
+      rd[k] = j; 
+    }
+    for (int i = 0; i < 4; i++) { //exploration des voisins
+      int nx = x + dx[rd[i]];
+      int ny = y + dy[rd[i]];
+      if (map[ny][nx] != WALL && map[ny][nx] != SNAKE_BODY && map[ny][nx] != SNAKE_HEAD) { //si voisin safe
+        char **tigre = malloc(sizeof(char*) * mapysize); //faire tigre, en considerant que ce chient peut bouffer une pomme
+        for (int y = 0; y < mapysize; y++){
+            tigre[y] = malloc(sizeof(char) * mapxsize);
+            for (int x = 0; x < mapxsize; x++)
+                tigre[y][x] = map[y][x];
+        }
+        if (tigre[ny][nx] != BONUS){
+            snake_list ss = s;
+            while (ss->next != NULL){
+                ss = ss->next;
+            }
+            tigre[ss->y][ss->x] == WALL;
+        }
+        tigre[ny][nx] == WALL;
+        if(trou_connexe(tigre,mapxsize,mapysize) == 1){
+            return dirs[i];
+        }
+      } 
+    }
+    return -1;
+  } 
   action a = (*sh)->move;
   shadow_list tmp = (*sh);
   (*sh) = (*sh)->next;
