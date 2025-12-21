@@ -302,7 +302,7 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
         tigre[ny][nx] = WALL;
         action b = -1;
         if(trou_connexe(tigre,mapxsize,mapysize) == 1)
-            b = dirs[i];
+            b = dirs[rd[i]];
         for(int y = 0; y < mapysize; y++)
             free(tigre[y]);
         free(tigre);
