@@ -111,7 +111,7 @@ void ajout_synonyme (T_syn * p, char * mot){
                     }
                 }   
             }
-            T_syn new = malloc(sizeof(struct sdd_synonymes));
+            T_syn new = malloc(sizeof(*new));
             new->cur = mot;
             new->l = NULL;
             new->r = NULL;
