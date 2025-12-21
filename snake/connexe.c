@@ -310,7 +310,6 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
             return b;
       } 
     }   
-    return -1;
   } 
   action a = (*sh)->move;
   shadow_list tmp = (*sh);
