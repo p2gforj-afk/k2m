@@ -89,7 +89,7 @@ int trou_connexe(char **map,int mapxsize, int mapysize){
     for (int y = 0; y < mapysize; y++)
         for (int x = 0; x < mapxsize; x++){
             map_c[y][x] = map[y][x];
-            if(map[y][x]  == PATH){
+            if(map[y][x]  == PATH || map[y][x] == BONUS){
                 x_trou = x;
                 y_trou = y;
                 nb_trou ++;
@@ -109,7 +109,7 @@ int trou_connexe(char **map,int mapxsize, int mapysize){
         for(int i = 0; i<4; i++){
             int nx = courant_trou->x + dx[i];
             int ny = courant_trou->y + dy[i];
-            if (map_c[ny][nx] == PATH) { //si voisin trou
+            if (map_c[ny][nx] == PATH || map_c[ny][nx] == BONUS) { //si voisin trou
                 bfs new = malloc(sizeof(*new)); //nouveau maillon pour ajouter le trou a notre liste
                 new->x = nx; //coordonnees du nouveau trou
                 new->y = ny;
