@@ -297,7 +297,7 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
             while (ss->next != NULL){
                 ss = ss->next;
             }
-            tigre[ss->y][ss->x] = WALL;
+            tigre[ss->y][ss->x] = PATH;
         }
         tigre[ny][nx] = WALL;
         action b = -1;
@@ -308,8 +308,9 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
         free(tigre);
         if (b != -1)
             return b;
-      } 
-    }   
+      }
+    }
+    return -1;   
   } 
   action a = (*sh)->move;
   shadow_list tmp = (*sh);
