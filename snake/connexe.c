@@ -300,11 +300,16 @@ action shadow_victoire(char **map,int mapxsize,int mapysize,snake_list s,action 
             tigre[ss->y][ss->x] = WALL;
         }
         tigre[ny][nx] = WALL;
-        if(trou_connexe(tigre,mapxsize,mapysize) == 1){
-            return dirs[i];
-        }
+        action b = -1;
+        if(trou_connexe(tigre,mapxsize,mapysize) == 1)
+            b = dirs[i];
+        for(int y = 0; y < mapysize; y++)
+            free(tigre[y]);
+        free(tigre);
+        if (b != -1)
+            return b;
       } 
-    }
+    }   
     return -1;
   } 
   action a = (*sh)->move;
