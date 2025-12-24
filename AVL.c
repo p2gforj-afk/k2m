@@ -166,12 +166,12 @@ int D_hauteur(T_dico p){
     if (p == NULL){
         return -1;
     }
-    return(hauteur(p->l) > hauteur(p->r)) ? 1 + hauteur(p->l)
-                                          : 1 + hauteur(p->r);
+    return(D_hauteur(p->l) > D_hauteur(p->r)) ? 1 + D_hauteur(p->l)
+                                              : 1 + D_hauteur(p->r);
 }
 void D_equilibre(T_dico * p){
     if (*p != NULL) 
-        (*p)->eq = (hauteur((*p)->l) - hauteur((*p)->r));
+        (*p)->eq = (D_hauteur((*p)->l) - D_hauteur((*p)->r));
 }
 void D_Rr(T_dico * p){
     T_dico  aux = (*p)->l;
@@ -186,12 +186,12 @@ void D_Lr(T_dico * p){
     *p = aux;
 }
 void D_LRr(T_dico *p){
-    Lr(&(*p)->l);
-    Rr(&(*p));
+    D_Lr(&(*p)->l);
+    D_Rr(&(*p));
 }
 void D_RLr(T_dico *p){
-    Rr(&(*p)->r);
-    Lr(&(*p));
+    D_Rr(&(*p)->r);
+    D_Lr(&(*p));
 }
 
 void D_ajout_entree (T_dico * p, char * mot, T_syn s){
@@ -242,7 +242,7 @@ void D_ajout_entree (T_dico * p, char * mot, T_syn s){
                 l2 = *p;
                 elec = NULL;
                 while(l2 != new){
-                    equilibre(&l2);
+                    D_equilibre(&l2);
                     if(l2->eq > 1 || l2->eq < -1){
                         elec = l2;
                     }
@@ -251,13 +251,13 @@ void D_ajout_entree (T_dico * p, char * mot, T_syn s){
                 }
                 if(elec != NULL){
                     if (elec->eq == 2)
-                        (hauteur(elec->r) > hauteur(elec->l))
-                            ? LRr(&elec)
-                            : Rr(&elec);
+                        (D_hauteur(elec->r) > D_hauteur(elec->l))
+                            ? D_LRr(&elec)
+                            : D_Rr(&elec);
                     else
-                        (hauteur(elec->l) > hauteur(elec->r))
-                            ? RLr(&elec)
-                            : Lr(&elec);
+                        (D_hauteur(elec->l) > D_hauteur(elec->r))
+                            ? D_RLr(&elec)
+                            : D_Lr(&elec);
                 }
             }
         }
@@ -309,7 +309,7 @@ void fafficher(T_syn p){
     fafficher(p->r);
 }
 int main(void){
-    T_dico DICO; 
+    T_dico DICO = NULL; 
 
     fafficher(liste_syn(DICO,"savon"));
     if (est_synonyme_de(DICO,"dragon","argoulet"))
