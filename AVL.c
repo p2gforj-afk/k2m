@@ -291,7 +291,7 @@ void charger_dico(T_dico *p){
     else
         printf("il est ou le fichier...\n");
 
-    return 0;
+    return;
 }
 
 T_syn liste_syn(T_dico p,char * mot){
@@ -309,14 +309,30 @@ bool est_synonyme_de(T_dico p, char*mot1, char*mot2){
     return appartient_a(liste_syn(p,mot1),mot2);
 }
 
-
+void scr(T_syn * u, T_syn u1, T_syn u2){
+    if (u1 == NULL)
+        return;
+    char * mot = u1->cur;
+    T_syn p = u2;
+    while(p != NULL){
+        int cmp = strcmp(p->cur,mot);
+        if (cmp == 0){
+            ajout_synonyme(u,mot);
+            p = NULL;
+        }
+        else 
+            p = (cmp>0) ? p->l 
+                        : p->r;
+    }
+    scr(u, u1->r, u2);
+    scr(u, u1->l, u2);
+}
 T_syn synonymes_communs(T_dico p, char*mot1, char*mot2){
     T_syn ussr = NULL;
     T_syn s1 = liste_syn(p, mot1);
     T_syn s2 = liste_syn(p, mot2);
-    
-
-
+    scr(&ussr, s1, s2); 
+    return ussr;
 }
 
 void fafficher(T_syn p){
