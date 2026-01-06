@@ -11,7 +11,7 @@
 // student name goes here
 char * student="Chaigne"; //c'est moi
 
-#define ALEA 1 // entier de 1 a inf, ainversement proportionelle au nombre de neuronne du snake
+#define ALEA 1 // entier de 1 a 32767, ainversement proportionelle au nombre de neuronne du snake
 
 action aleatoire(char * * map, int mapxsize, int mapysize, snake_list s, action last_action ){
   bool ok=false;  // ok will be set to true as soon as a randomly selected action is valid
