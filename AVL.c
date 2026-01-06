@@ -265,7 +265,33 @@ void D_ajout_entree (T_dico * p, char * mot, T_syn s){
 }
 
 void charger_dico(T_dico *p){
-//4h pour ca + debug
+    FILE *stream = fopen("base_synonymes.txt", "r"); 
+    char s[100];
+    char * mot;
+    T_syn smot = NULL;
+    int flag = 1; 
+    if (stream != NULL) { 
+        while (fgets(s, sizeof(s), stream) != NULL) {
+            if (strcmp(s, "N_ENT") != 0){
+                if (flag){
+                    mot = s;
+                    flag--;
+                }
+                else{
+                    ajout_synonyme(&smot, s);
+                }
+            }
+            else {
+                flag = 1;
+                D_ajout_entree(p,mot, smot);
+            }
+        }
+        fclose(stream);
+    } 
+    else
+        printf("il est ou le fichier...\n");
+
+    return 0;
 }
 
 T_syn liste_syn(T_dico p,char * mot){
@@ -283,22 +309,14 @@ bool est_synonyme_de(T_dico p, char*mot1, char*mot2){
     return appartient_a(liste_syn(p,mot1),mot2);
 }
 
-void scr(T_dico p,T_syn s1,char*mot2, T_syn * l){
-    if(s1 == NULL)
-        return;
-    if(est_synonyme_de(p,s1->cur,mot2))
-        ajout_synonyme(l,s1->cur);
-    scr(p,s1->l,mot2,l);
-    scr(p,s1->r,mot2,l);
-}
 
 T_syn synonymes_communs(T_dico p, char*mot1, char*mot2){
     T_syn ussr = NULL;
-    T_syn s1 = liste_syn(p,mot1);
-    if(s1 == NULL)
-        return ussr;
-    scr(p,s1,mot2,&ussr);
-    return ussr;
+    T_syn s1 = liste_syn(p, mot1);
+    T_syn s2 = liste_syn(p, mot2);
+    
+
+
 }
 
 void fafficher(T_syn p){
@@ -310,7 +328,7 @@ void fafficher(T_syn p){
 }
 int main(void){
     T_dico DICO = NULL; 
-
+    charger_dico(&DICO);
     fafficher(liste_syn(DICO,"savon"));
     if (est_synonyme_de(DICO,"dragon","argoulet"))
         printf("BO LE SYNONYME\n");
