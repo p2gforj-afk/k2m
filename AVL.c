@@ -365,8 +365,10 @@ int main(void){
                 T_syn commun = synonymes_communs(DICO, mot1, mot2);
                 if (commun == NULL)
                     printf("\nRATIO\n");
+                else if (strcmp(mot1, mot2) == 0)
+                    printf("\nveuillez utiliser l'option 1 pour ce type de requette\n");
                 else  
-                    printf("\n%s et %s mots ont pour synonymes communs...\n\n", mot1, mot2);
+                    printf("\n%s et %s ont pour synonymes communs...\n\n", mot1, mot2);
                     fafficher(commun);
                 break;
                 
