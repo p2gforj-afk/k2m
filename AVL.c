@@ -344,7 +344,7 @@ int main(void){
                 printf("le mot d'apres : ");
                 fgets(mot2, 100, stdin);
                 mot2[strcspn(mot2, "\n")] = 0;
-                if(D_appartient_a(DICO, mot1) && D_appartient_a(DICO, mot2)){
+                if(D_appartient_a(DICO, mot1)){
                     if (est_synonyme_de(DICO, mot1, mot2))
                         printf("\n%s et %s sont de bo synonymes\n", mot1, mot2);
                     else if (strcmp(mot1, mot2) == 0)
