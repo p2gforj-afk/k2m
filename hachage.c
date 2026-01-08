@@ -45,18 +45,5 @@ int main(void){
     T_ht TABLE;
     create_ht(&TABLE, 9);
     init(&TABLE, 9);
-    insertion(&TABLE, 9, 5);
-
-    if (recherche(&TABLE, 9, 28))
-        printf("on est laaaa\n");
-    else
-        printf("on est pas laaaa\n");
-
-    if (recherche(&TABLE, 9, 5))
-        printf("on est laaaa\n");
-    else
-        printf("on est pas laaaa\n");
-    
-    printf("%d", TABLE.l[5]->elt);
     return 0;
 }
