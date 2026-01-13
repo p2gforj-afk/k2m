@@ -16,7 +16,7 @@ struct hachage{
 
 void create_ht(T_ht * pht, int k){
     pht->n = k;
-    pht->l = malloc(k*sizeof(T_liste ));
+    pht->l = malloc(k*sizeof(T_liste));
 }
 void init(T_ht * ht){
     for(int i = 0; i<ht->n; i++){
