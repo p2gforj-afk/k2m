@@ -204,10 +204,12 @@ action presque_victoire(char **map,int mapxsize,int mapysize,snake_list s,action
   }
   if(rand()%2 == 0){
     if (map[s->y-1][s->x]!=BONUS && map[s->y][s->x+1]!=BONUS && map[s->y+1][s->x]!=BONUS && map[s->y][s->x-1]!=BONUS){
-        // cas tres specifique au late game, le but etant de bouger les trous restants
-        // en effet le test precedent ira tres rarement dans un trou d'une seule case en late game 
-        // car snake suit sa queue et pour la simple et bonne raison que je n'update pas la postion du snake lors du BFS...
-        // on verifie ici que la pomme n'est pas adjacente a la tete sinon l'aleatoire qui va arriver peut faire de la dingz
+        /* 
+        cas tres specifique au late game, le but etant de bouger les trous restants
+        en effet le test precedent ira tres rarement dans un trou d'une seule case en late game 
+        car snake suit sa queue et pour la simple et bonne raison que je n'update pas la postion du snake lors du BFS...
+        on verifie ici que la pomme n'est pas adjacente a la tete sinon l'aleatoire qui va arriver peut faire de la dingz
+        */
       snake_list ptail = s; //va correspondre a l'avant dernier maillon du snake
       while(ptail->next->c != SNAKE_TAIL){
         ptail = ptail->next;
