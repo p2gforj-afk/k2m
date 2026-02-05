@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra CMakeFiles/sort_exec.dir/apps/Sort.c.o -o ../bin/sort  -Wl,-rpath,/users/elo/rchaigne/ahhhhhhhhhh/sort-make/lib ../lib/libsort.so ../lib/libsystem_utils.a 

@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC  -Wall -Wextra -shared -Wl,-soname,libsort.so -o ../lib/libsort.so CMakeFiles/sort.dir/src/sort/sort.c.o CMakeFiles/sort.dir/src/sort/demo.c.o 

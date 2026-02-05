@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../lib/libsystem_utils.a CMakeFiles/system_utils.dir/src/system_utils/system_utils.c.o
+/usr/bin/ranlib ../lib/libsystem_utils.a
