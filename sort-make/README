@@ -2,6 +2,6 @@
 
 In the root directory of the project, run the following command:
  $ make doc
-Then open the file doc.html.
+Then open the file index.html or build the pdf w/ latex
 
 

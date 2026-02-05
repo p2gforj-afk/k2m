@@ -33,3 +33,9 @@ clean:
 	rm -rf build/*
 	rm -rf bin/sort
 
+#grand nettoyage
+remove:
+	rm -rf build/*
+	rm -rf bin/*
+	rm -rf ./doc
+
