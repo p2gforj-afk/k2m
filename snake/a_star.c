@@ -11,7 +11,7 @@
 // student name goes here
 char * student="Chaigne"; //c'est moi
 
-#define ALEA 1 // entier de 1 a 32767, ainversement proportionelle au nombre de neuronne du snake
+#define ALEA 1 // entier de 1 a 32767, inversement proportionelle au nombre de neuronne du snake
 
 action aleatoire(char * * map, int mapxsize, int mapysize, snake_list s, action last_action ){
   bool ok=false;  // ok will be set to true as soon as a randomly selected action is valid
@@ -241,7 +241,7 @@ int a_shadow_star(char **map,int mapxsize,int mapysize,int x_debut,int y_debut,s
       if (sh_map[ny][nx] != WALL && sh_map[ny][nx] != SNAKE_BODY && sh_map[ny][nx] != SNAKE_HEAD) { //si voisin safe
         // va falloir conserver le meilleur i voila
         if(NY(nx,ny,x_apple,y_apple) < min || min == -1){
-          if(rand()%ALEA == 0) //vous vous en doutez on fait des choses etranges ici
+          if(rand()%ALEA == 0) //vous vous en doutez on fait des choses etranges icicd
             min = NY(nx,ny,x_apple,y_apple);
           shadow_id = i;
         }
