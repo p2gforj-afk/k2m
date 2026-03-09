@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Not a matter of If but When.</title>
+  <link rel="shortcut icon" href="./images/favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" href="./styles/style.css">
+  
+  <!-- Le bloc suivant me permet de faire représneter du code (JS) en HTML avec une colloaration syntaxique -->
+  <link rel="stylesheet" href="./styles/default.min.css">
+  <script src="./scripts/highlight.min.js"></script>
+  <script>
+        hljs.initHighlightingOnLoad();
+  </script>
+  <!-- fin du bloc -->
+
+  <!-- Le bloc suivant lie le script sur lequel vous allez travailler pendant la séance -->
+  <script src="./scripts/script.js"></script>
+
+</head>
+<body>
+  <hgroup>
+    <h1>Javascript</h1>
+    <p>Bases - Asynchronisme - Web API</p>
+  </hgroup>
+
+<h2>Premiers codes en JS</h2>
+
+<h3>La séquence de chargement</h3>
+<p>Quand la page se charge, les codes HTML, CSS et JavaScript s'exécutent dans un environnement (l'onglet du navigateur).</p>
+
+<p>Le JavaScript est exécuté par le moteur JavaScript du navigateur, après que le HTML et le CSS ont été assemblés et combinés en une page web. Cet enchaînement est nécessaire pour être sûr que la structure et le style de la page sont déjà en place quand le JavaScript commence son exécution.</p>
+
+<p>C'est une bonne chose, étant donné qu'un usage fréquent de JavaScript est de modifier dynamiquement le HTML et le CSS pour mettre à jour l'interface utilisateur, via l'API DOM. Charger le JavaScript et essayer de l'exécuter avant que le HTML et le CSS ne soient en place mènerait à des erreurs.</p>
+
+<p>Chaque onglet du navigateur constitue un périmètre séparé dans lequel s'exécute le code (en termes techniques ces périmètres sont des « environnements d'exécution ») ce qui signifie que, dans la plupart des cas, le code de chaque onglet est exécuté complètement séparément, et le code d'un onglet ne peut affecter directement le code d'un autre onglet ou d'un autre site. </p>
+
+<p>Quand le navigateur rencontre un bloc de JavaScript, il l'exécute généralement dans l'ordre, de haut en bas. Vous devrez donc faire attention à l'ordre dans lequel vous écrivez les choses. Prennons les deux  scripts suivants : 
+<pre><code class="js">
+  let para = document.querySelector("p"); 
+  para.addEventListener("click", updateName); 
+  function updateName() {
+    let name = prompt("Enter a new name");
+    para.textContent = "Player 1: " + name;
+  }
+</code></pre>
+et
+<pre><code class="js">
+  para.addEventListener("click", updateName);
+  let para = document.querySelector("p"); 
+  function updateName() {
+    let name = prompt("Enter a new name");
+    para.textContent = "Player 1: " + name;
+  }
+</code></pre>
+Les deux codes varient dans l'enchaînement desux premières lignes. Le deuxième code est en erreur : <code>TypeError: para is undefined</code>. Cela signifie que l'objet para n'existe pas encore, donc nous ne pouvons pas y ajouter de gestionnaire d'évènement. La raison? JavaScript est un langage <strong>interprété</strong> : le code est exécuté de haut en bas et le résultat du code exécuté est envoyé immédiatement. Vous n'avez pas à transformer le code en une autre forme avant que le navigateur ne l'exécute (langage compilé).</p>
+
+<p>Le chargement des scripts au bon moment pose un certain nombre de problèmes. Un problème courant est que le code HTML d'une page se charge en suivant l'ordre d'apparition dans le code source. Si vous utilisez JavaScript pour manipuler des éléments sur la page (plus précisément, le DOM), votre code <strong>ne fonctionnera pas</strong> si le JavaScript est chargé et analysé <strong>avant</strong> le code HTML sur lequel vous voulez opérer. Pour s'assurer que votre code JS s'exécute après le chargement du code HTML sur lequel il va s'exécuter, on recommande de l'encapsuler dans une fonction appelée à la fin de ce chargement. Ceci fait appel au gestionnaire d'événement comme suit : 
+<pre><code class="js">
+document.addEventListener("DOMContentLoaded", function() {
+  // votre code ici 
+  ...
+});
+</code></pre>
+Il s'agit d'un gestionnaire d'évènement associé à l'événement <code>DOMContentLoaded</code> du navigateur, cet événement est déclenché quand le body HTML est complètement chargé et analysé. Le code JavaScript à l'intérieur du bloc est exécuté après le déclenchement de DOMContentLoaded. 
+
+<h3>Syntaxe et extraits de code réutilisables</h3>
+<div id="GUI">
+  <p>Dans ce bloc, les interactions avec le script JS.  </p>
+  <p> A FAIRE : Modifiez le code du script pour qu'un boutton de supression de ligne soit proposé en fin de chaque nouvelle ligne.</p>
+</div>
+
+
+</p>
+
+</body>
+</html>

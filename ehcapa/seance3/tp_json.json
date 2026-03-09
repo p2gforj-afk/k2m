@@ -1,0 +1,8 @@
+{
+    "departement": [
+        {"numero" : 22 , "nom" : "Côtes d'armor"},
+        {"numero" : 29 , "nom" : "Finistère"},
+        {"numero" : 56 , "nom" : "Morbihan"}
+    ]
+
+}

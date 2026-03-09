@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<!-- Les commmentaires en HTML s'écrivent ainsi.
+Le document HTML5 débute toujours avec la balise DOCTYPE. Voir l'historique de cette balise, reliée aux différentes versions d'HTML
+L'un des principaux buts de HTML est de structurer du texte et lui donner du sens -->
+
+<html lang="fr">
+<!-- Cet élément est le contenant de tout le code de la page et est parfois connu comme l'élément racine. -->
+  <head>
+    <!-- l'élément head contient des données non représentées à l'utilisateur par le navigateur, destinées au navigateur et aux moteurs d'indexation.--> 
+
+    <meta charset="UTF-8">
+    <!-- les balises meta donnent des meta-informations comme, ici, le type d'encodage des caractères à utiliser. On aurait pu péciser "japanese"
+    ou autre... UTF-8 permet de retranscrire les caractères spéciaux de la langue française.-->
+
+    <meta name="author" content="Romain CHAIGNE" />
+    <!-- Cette balise peut être utilisée par les moteurs d'indexation.-->
+
+    <meta
+      name="description"
+      content="La séquence 1 du cours a pour objectif l'élaboration d'une page web présentant les prénoms les plus donnés sur le département." 
+    />
+    <!-- Définir une description qui incorpore des mots-clés relatifs au contenu de la page est utile ; votre page pourra ainsi apparaître plus haut 
+    dans la liste de recherches par pertinence créée par un moteur de recherche (ce processus se nomme Search Engine Optimization ou SEO — optimisation 
+    du moteur de recherche.) -->
+
+    <!-- A FAIRE : Recherchez la page Mozilla Developper Network indiquant l'ensemble des balises meta et ajoutez en à la page courante.-->
+    <meta
+      name="meta-information de zinzin"
+      content="guette un peu la bete d'info" 
+    />
+    <!-- FAIT -->
+
+    <title>Sequence 1 - Seance 1</title>
+    <!-- la balise TITLE ne doit pas dépasser 512 pixels, soit environ 55 à 65 caractères en moyenne.
+    Elle peut être utilisée par les moteurs d'indexation. -->
+
+
+      <!-- Apple-->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="./images/apple-touch-icon.png" />
+    <!-- android chrome -->
+    <link
+      rel="android-chrome-icon"
+      sizes="512x512"
+      href="./images/android-chrome-512x512.png" />
+    <link
+      rel="android-chrome-icon"
+      sizes="192x192"
+      href="./images/android-chrome-192x192.png" />
+    <!-- favicône de base  -->
+    <link rel="shortcut icon" href="./images/favicon.ico" />
+
+    <link rel="stylesheet" href="./styles/style.css">
+    <script src="./scripts/script.js"></script>
+    <!-- ces trois éléments établissent des liens entre la page courante et des pages annexes en précisant la relation portée par le lien. 
+    Ici, les relations sont : favicon, stylesheet et script. Les documents référencés par href et src seront chargés à la suite du document courant. -->
+    <!-- A FAIRE : Explorez le contenu du répertoire courant pour retrouver les documents liés à la page courante. -->
+    <!-- A FAIRE : Utilisez les outils developpeur de votre navigateur pour observer que le lien est bien effectif.-->
+    <!-- A FAIRE : On peut préciser quelle favicon doit être utilisée selon le  support du navgateur (iphone, ipad, ...). 
+    Recherchez la page Mozilla Developper Network vous indiquant comment faire.  -->
+    <!-- A FAIRE : De même, il est possible de définir la feuille de style à employer en fonction du type support. 
+    Recherchez sur MDN comment cela est possible et préciser quelle feuille de style utiliser avec cette page selon qu'elle soit visualisée
+    par écran d'ordinateur, de smartphone ou  une imprimante. -->
+
+  </head>
+  <body>
+    <!-- contenu de la page -->
+    <h1>Ceci est un titre de niveau 1, le plus élevé.pour nommer la page</h1>
+    <h2>Et ici un titre de niveau 2, pour nommer une section (ici: Notions de HTML)</h2>
+    <h3>Qu'est ce que le <abbr title="HyperText Markup Language">HTML</abbr>?</h3>
+    <p>HTML (HyperText Markup Language) n'est pas un langage de programmation : c'est un langage de balisage qui sert à indiquer au navigateur comment structurer les pages web visitées. Il peut être aussi compliqué ou aussi simple que le développeur web souhaite qu'il soit. Le HTML se compose d'une série d'éléments avec lesquels vous pouvez encadrer, envelopper ou baliser différentes parties du contenu pour les faire apparaître ou agir d'une certaine manière. Des balises encadrantes peuvent transformer une petite partie de contenu en un lien vers une autre page sur le Web, mettre des mots en italique, etc. </p>
+    <!-- Si nous voulons que cet ensemble de lignes reste en l'état, nous pouvons dire qu'il s'agit d'un paragraphe
+    en l'enveloppant d'un élément paragraphe (<p>). Pour cela, on le précède de la balise ouvrante <p> et on le clos par la balise fermante </p>. -->
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco <strong>laboris</strong> nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <!-- Vous pouvez mettre des éléments à l'intérieur d'autres éléments — cela s'appelle l'imbrication. Si vous voulez affirmer 
+    que votre chat est très grincheux, vous pouvez mettre le mot « très » dans l'élément <strong>, pour qu'il soit fortement mis en valeur -->
+
+    <h3>Éléments ligne et éléments blocs</h3>
+    <p>Il existe deux catégories importantes d'éléments en HTML que vous devez connaître : les éléments de niveau bloc et les éléments en ligne.</p>
+    <dl>
+      <dt>Les éléments de niveau bloc</dt> <dd>forment un bloc visible sur une page — ils apparaissent sur une nouvelle ligne quel que soit le contenu précédant et tout contenu qui les suit apparaît également sur une nouvelle ligne. Les éléments de niveau bloc sont souvent des éléments structurels de la page et représentent, par exemple, des paragraphes, des listes, des menus de navigation, des pieds de page, etc. <em>Un élément de niveau bloc ne peut pas être imbriqué dans un élément en ligne, mais il peut être imbriqué dans un autre élément de niveau bloc</em>.</dd>
+      <dt>Les éléments en ligne</dt> <dd>sont contenus dans des éléments de niveau bloc. Ils entourent seulement des petites parties du contenu du document, ni des paragraphes entiers, ni des regroupements de contenu. Un élément en ligne ne fait pas apparaître une nouvelle ligne dans le document. Il apparaît généralement dans un paragraphe de texte, par exemple un élément &lt;a&gt; (hyperlien) ou des éléments de mise en évidence tels que &lt;em&gt; ou &lt;strong&gt;.</dd>
+    </dl>
+
+    <p>Tous les éléments ne suivent pas le modèle ci-dessus d'ouverture de balise, puis contenu, puis fermeture de balise. Certains éléments ne sont composés que d'une balise. Ils servent généralement à insérer / incorporer quelque chose dans le document à l'endroit où ils sont mis. Par exemple, l'élément &lt;img /&gt; ou &lt;img&gt; insère une image dans une page à l'endroit où il est placé (la balise auto-fermante &lt;img /&gt; est à privilégier) 
+
+    <h3>Les éléments peuvent avoir des attributs</h3>
+    <p>Les attributs contiennent des informations supplémentaires sur l'élément sans qu'elles n'apparaissent dans le contenu réel. Par exemple :</p>
+    <p><code>
+      &lt;div class="divClass1"&gt;Ceci est un bloc div de classe 1&lt;/div&gt;
+    </code> </p> 
+     Ici, l'attribut class vous permet de donner à l'élément un nom d'identification qui peut ensuite être utilisé pour cibler l'élément afin de lui attribuer un style CSS ou un comportement particulier, par exemple.</p>
+
+    <h3>Les entités nommées : inclure des caractères spéciaux</h3>
+    <p>En HTML, les caractères <, >,",' et & sont des caractères spéciaux. Ils font partie de la syntaxe HTML elle-même, alors comment inclure un de ces caractères dans du texte, par exemple si vous voulez vraiment utiliser une esperluette (&) ou un signe inférieur (<), qui ne soit pas interprété en tant que code comme les navigateurs pourraient le faire ?</p>
+    <p>Nous devons utiliser les références des caractères — des codes spéciaux qui représentent des caractères et peuvent être utilisés dans ces circonstances exactes. Chaque référence de caractère est démarrée avec une esperluette (&), et se termine par un point-virgule (;).
+      <ul>
+        <!-- Les listes non-ordonnées débutent par un élément <ul> (unordered list) qui enveloppe tous les éléments de la liste -->
+        <li>< : &amp;lt;</li>
+        <!-- Chaque item est contenu dans un élément <li> (list item) -->
+        <li>> : &amp;gt;</li>
+        <li>" : &amp;quot;</li>
+        <li>' : &amp;apos;</li>
+        <li>& : &amp;amp;</li>
+      </ul>
+      <!-- Les balises suivent la même structure que pour les listes ordonnées, à cela près que la liste est 
+      contenue dans l'élément <ol> (ordered list), et non dans <ul> -->
+    </p>
+
+    <h3>Les Hyperliens</h3>
+    <p>Les Hyperliens sont ce qui fait du Web une toile.</p>
+    <p>Ils nous permettent de lier nos documents à n'importe quel autre document (ou autre ressource) voulu ; nous pouvons faire des liens vers des parties précises de documents et rendre des applications disponibles à une simple adresse web.</p>
+    <p>Un lien élémentaire se crée en intégrant le texte (ou tout autre contenu) que vous voulez transformer en lien dans un élément &lt:a&gt; et en lui affectant un attribut <code>href</code> (également connu comme étant une Hypertext Reference) contenant l'adresse web vers laquelle vous voulez que le lien pointe.</p>
+    <p>L'autre attribut qu'il est possible d'ajouter à un lien est <code>title</code> ; il est destiné à contenir des informations utiles supplémentaires à propos du lien, comme le type d'informations contenues dans la page ou ce qu'il faut savoir. </p>
+
+
+
+    <p>
+  Je suis en train de créer un lien à
+  <a
+    href="https://www.mozilla.org/fr/"
+    title="Le meilleur endroit pour trouver plus d'informations sur la
+    mission de Mozilla et la manière de contribuer">la page d'accueil Mozilla</a>.
+</p>
+
+    <h3>Les listes</h3>
+    <p>Les listes sont aussi très répandues sur le Web, nous allons nous intéresser aux trois différents types de liste.</p>
+    <dl>
+      <dt>les listes non-ordonnées</dt><dd>Les listes non-ordonnées sont utilisées pour représenter des listes d'éléments pour lesquelles l'ordre n'a pas d'importance (comme une liste de courses). Les listes non-ordonnées débutent par un élément &lt;ul&gt; (unordered list) qui enveloppe tous les éléments de la liste.</dd>
+      <dt>les listes ordonnées</dt><dd>Les listes ordonnées permettent de représenter des listes dans lesquelles l'ordre des éléments a de l'importance (comme une recette de cuisine). Les balises suivent la même structure que pour les listes ordonnées, à cela près que la liste est contenue dans l'élément &lt;ol&gt; (ordered list), et non dans &lt;ul&gt;</dd>
+      <dt>les listes descriptives</dt><dd>L'objectif de ces listes est de marquer une série d'éléments et leurs descriptions associées, comme termes et définition, ou bien questions et réponse. Les listes descriptives utilisent une enveloppe de balisage différente de celle des autres types de listes — &lt;dl&gt; ; chaque terme est en plus entouré d'un élément &lt;dt&gt; (description term) et chaque description d'un élément &lt;dd&gt; (description definition).</dd>
+    </dl>
+    <h3>Les tableaux</h3>
+    <p>Une tâche assez courante en HTML consiste à structurer des données sous forme de tableaux. HTML dispose d'un certain nombre d'éléments avec attributs à cet effet. Couplé avec un peu de CSS pour styliser ces tableaux, HTML facilite l'affichage d'informations dans des tableaux sur le web.</p>
+    <p></p>
+    <table>
+      <thead>
+        <th colspan="5">Voici l'entête du tableau </th>
+        <tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+        <tr><td>Do</td><td>Ré</td><td>Mi</td><td>Fa</td><td>Sol</td></tr>
+        <tr><td>Rouge</td><td>Jaune</td><td>Vert</td><td>Bleu</td><td>Orange</td></tr>
+        <tr><td>Pomme</td><td>Poire</td><td>Banane</td><td>Orange</td><td>Fraise</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td>Foot1</td><td>Foot2</td><td>Foot3</td><td>Foot4</td><td>Foot5</td></tr>
+      </tfoot>
+      <caption>
+        Voici un descriptif du tableau donné par l'élément caption.
+      </caption>
+    </table>
+
+    <p>Pour plus d'informations et surtout une considération sur l'accessibilité des tableaux : rendez vous sur <a href="https://developer.mozilla.org/fr/docs/Learn/HTML/Tables" target="_blank">la page MDN dédiée</a></p>
+
+
+    <h2>Le style, par les <abbr title="Cascading Style Sheets">CSS</abbr></h2>
+    <p>Les Cascading StyleSheets — ou CSS — (Feuilles de style en cascade) sont la première technique à apprendre après le HTML. 
+    Alors que HTML s'utilise pour définir la structure et la sémantique du contenu, les CSS sont employées pour composer et déterminer l'<strong>apparence</strong> de ce contenu. Ainsi par exemple, vous utiliserez les CSS pour modifier les polices, la couleur, la taille et l'espacement de votre contenu, pour le répartir sur plusieurs colonnes ou bien pour ajouter des animations et autres fonctionnalités décoratives.</p>
+    <p>POur aller plus loin : <a href="https://developer.mozilla.org/fr/docs/Learn/CSS/First_steps/What_is_CSS">La page MDN sur CSS</a></p>
+    <h3>La syntaxe CSS</h3>
+    <p>CSS est un langage basé sur des règles — on définit des règles de styles destinées à des éléments ou des groupes d'éléments particuliers dans la page. Par exemple, « Je veux que le titre principal de ma page s'affiche en rouge en gros caractères. » se traduira par : </p>
+    <pre><code>
+h1 {
+  color: red;
+  font-size: 5em;
+}
+</code></pre>
+  <pre>La règle commence par un sélecteur, l'élément HTML mis en forme. Ici, le style s'applique aux titres de niveau 1.
+
+Suivent une paire d'accolades { } à l'intérieur desquelles on trouve une ou plusieurs déclarations, sous la forme d'une paire propriété: valeur. Chaque paire précise une propriété de l'élément sélectionné, suivie de la valeur choisie pour cette propriété ; la propriété et la valeur sont séparées par deux points. Chaque déclaration se termine par un point-virgule. À chaque propriété définie par CSS correspondent différentes valeurs possibles. </pre>
+    <h3>Les sélecteurs CSS</h3>
+    <p>les sélecteurs ont différentes façons de cibler le document HTML — on peut par exemple cibler les éléments selon leu type (<code>h1</code>) , leur classe (<code>.special</code>) ou leur identifiant (<code>#monIdentifiant</code>)</p>
+    <p>Il est possible d'appliquer une même règle à plusieurs sélecteurs regroupés en liste (utilisation de la virgule).
+      <pre><code>
+      h1, .special {
+        color: blue;
+      }
+</code></pre></p>
+  <p> On peut cibler des éléments en fonction de la présence d'un attribut donné pour un élément donné  <pre><code>
+    a[title] {
+      ...
+    }
+  </code></pre></p>
+
+ <p> On peut baser la sélection sur la présence d'un attribut avec une valeur bien précise  <pre><code>
+  a[href="https://example.com"]{
+    ...
+  }
+ </code></pre></p>
+
+ <p>Les pseudo-classes, qui ciblent des éléments dans un état donné. Par exemple, la pseudo-classe :hover sélectionne un élément seulement s'il est survolé par le pointeur de la souris <pre><code>
+  a:hover {
+    ...
+  }
+
+ </code></pre></p>
+
+<p> on combine les sélecteurs pour cibler plus finement les éléments dans nos documents. L'exemple suivant sélectionne les paragraphes enfants directs de &lt;article&gt; grâce au combinateur enfant (>) <pre><code>
+  article > p {
+    ...
+  }
+</code></pre></p>
+<!-- A FAIRE : modifier la CSS actuelle pour ajouter un cadre autour de chaque portion de <code> d'un élément <pre> -->
+
+
+
+  </body>
+</html>
