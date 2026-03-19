@@ -22,7 +22,7 @@
 	add R1, R1, 1
 	add R2, R2, 1
 	add R8, R8, 1
-	sub R3, R3, 1
+	sub R3, R3, 1	
 	brnz R3, boucle1
 	exit
 .end
