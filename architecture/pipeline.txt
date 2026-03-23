@@ -52,3 +52,8 @@ on peut pas deviner ou va le branchement...
 
 2.23
 un oracle qui se base sur les branchemnts qui ont eu lieu et qui essaye de deviner la ou le branchement va mener avant que le branchement n'est lieu
+
+Sujet 2
+
+2.1 on fait la soustraction et R4 est donc soit positif donc (brp) donc la valeur est superieur au seuil, on incremente 
+le nombre de valeur superieur au seil
