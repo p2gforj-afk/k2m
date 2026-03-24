@@ -1,9 +1,22 @@
+import java.util.ArrayList;
+import java.util.List;
+
 abstract class Enseignant {
     private String namae;
     private String prenom;
     private String adresse;
     private int numero;
     private int nbCour;
+    private static final List<Enseignant> listEnseignant = new ArrayList<>();
+
+
+    public static double coutGlobal(){
+        double cout = 0;
+        for (Enseignant e : listEnseignant){
+            cout += e.coutEnseignant();
+        }
+        return cout;
+    }
 
     
     public String getNamae() {
@@ -23,6 +36,7 @@ abstract class Enseignant {
     }
     
     public Enseignant(String namae, String prenom, String adresse, int numero, int nbCour) {
+        listEnseignant.add(this);
         this.namae = namae;
         this.prenom = prenom;
         this.adresse = adresse;
@@ -58,4 +72,6 @@ abstract class Enseignant {
         sb.append('}');
         return sb.toString();
     }
+
+    public abstract double coutEnseignant();
 }
