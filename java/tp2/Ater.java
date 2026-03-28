@@ -5,7 +5,7 @@ public class Ater extends Enseignant{
 
     public void setHeureSup(int heureSup){
         if (heureSup <= 45 && heureSup >= 0) this.heureSup = heureSup;
-        else System.err.println("nb d'heures invalide");
+        else System.out.println("nb d'heures invalide");
     }
 
     public int getHeureSup(){

@@ -6,7 +6,7 @@ public class Segment2D{
 		this.p = p;
 		this.d = d;
 		if (p.equals(d)) {
-			System.err.println("meme point");
+			System.out.println("meme point");
 		}
 	}
 	

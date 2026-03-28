@@ -1,7 +1,7 @@
 public class Cercle{
     public static void main(String[] args) {
         if (args.length != 1){
-            System.err.println("vous devez indiquer en parametre le rayon du cercle");
+            System.out.println("vous devez indiquer en parametre le rayon du cercle");
         }
         else{
             float rayon = Float.valueOf(args[0]);
