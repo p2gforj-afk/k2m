@@ -10,7 +10,7 @@ public class Triangle2D{
 		this.d = d;
 		this.g = g;
 		if (p.equals(d) || p.equals(g) || g.equals(d)) {
-			System.err.println("not a triangle");
+			System.out.println("not a triangle");
 		}
 	}
 	

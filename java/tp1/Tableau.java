@@ -28,12 +28,12 @@ public class Tableau{
         for(int i = 0; i<10; i++){
             System.out.print(tab[i] + ";");
         }
-        System.err.println("");
+        System.out.println("");
         Tableau.tri(tab);
 
         for(int i = 0; i<10; i++){
             System.out.print(tab[i] + ";");
         }
-        System.err.println("");
+        System.out.println("");
     }
 }
