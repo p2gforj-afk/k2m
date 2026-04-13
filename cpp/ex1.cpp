@@ -3,7 +3,9 @@
 #include <numeric>
 #include <vector>
 
-template <typename T> class Statistiques {
+template <typename T>
+class Statistiques
+{
 private:
   std::vector<T> donnees;
 
@@ -14,28 +16,37 @@ public:
   double obtenirMoyenne() const;
 };
 
-template <typename T> void Statistiques<T>::ajouter(T valeur) {
+template <typename T>
+void Statistiques<T>::ajouter(T valeur)
+{
   donnees.push_back(valeur);
 }
 
-template <typename T> T Statistiques<T>::obtenirMax() const {
+template <typename T>
+T Statistiques<T>::obtenirMax() const
+{
   if (donnees.empty())
     return 0;
   return *std::max_element(donnees.begin(), donnees.end());
 }
 
-template <typename T> double Statistiques<T>::obtenirMoyenne() const {
+template <typename T>
+double Statistiques<T>::obtenirMoyenne() const
+{
   if (donnees.empty())
     return 0.0;
   T somme = std::accumulate(donnees.begin(), donnees.end(), T(0.0));
   return static_cast<double>(somme) / donnees.size();
 }
 
-template <typename T> void Statistiques<T>::trie() {
+template <typename T>
+void Statistiques<T>::trie()
+{
   std::sort(donnees.begin(), donnees.end());
 }
 
-int main() {
+int main()
+{
   Statistiques<double> notes;
   notes.ajouter(12.5);
   notes.ajouter(18.0);
