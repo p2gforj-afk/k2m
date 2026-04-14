@@ -1,15 +1,35 @@
+import java.util.Date;
+
 public class CompteCourant extends CompteBancaire{
-    private int decouvertAutorise;
-    private boolean chequier;
-    private CB carte;
+  private int decouvertAutorise;
+  private boolean chequier;
+  private int carte;
 
-    public double credit(double sommeCredit){
-        return solde + sommeCredit;
-    }
+  // ============ Constructor ============
+  public CompteCourant(double solde, int numeroCompte, Date dateOuverture, Client client, int decouvertAutorise, boolean chequier, int carte) {
+    super(solde, numeroCompte, dateOuverture, client);
+    this.decouvertAutorise = decouvertAutorise;
+    this.chequier = chequier;
+    this.carte = carte;
+  }
 
-    public double debit(double sommeDebit){
-        return solde - sommeDebit;
-    }
+  public int getDecouvertAutorise() {return decouvertAutorise;}
+  public void setDecouvertAutorise(int decouvertAutorise) {this.decouvertAutorise = decouvertAutorise;}
 
-    
+  public boolean isChequier() {return chequier;}
+  public void setChequier(boolean chequier) {this.chequier = chequier;}
+
+  public int getCarte() {return carte;}
+  public void setCarte(int carte) {this.carte = carte;}
+
+  // ============ Override Methods ============
+  @Override
+  public void credit(double creditValue) {
+
+  }
+
+  @Override
+  public void debit(double debitValue) {
+
+  }
 }
